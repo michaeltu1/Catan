@@ -8,7 +8,14 @@ class Board:
         """
         :param mode: determines the configuration of the game
         """
-        self.config = Config().get_config(mode)
+        c = Config()
+        # Initialize game rules
+        self.config = c.get_config(mode)
+
+        # Get the sampling distribution of the dice
+        # Distribution is a normalized numpy array
+        dice = self.config["dice"]
+        self.distribution = c.get_normalized_distribution(dice)
 
     def __str__(self):
         # TODO(mtu): print the board
