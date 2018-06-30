@@ -1,9 +1,13 @@
 class Tile:
-    # Intersections keeps track of a set of tuples that are the keys 
-    # to the intersection dictionary
+    """
+    Intersections keeps track of a set of tuples that are the keys 
+    to the intersection dictionary
 
-    # Edges keeps track of a set of unique ids that are the keys
-    # to the edges dictionary
+    Edges keeps track of a set of unique ids that are the keys
+    to the edges dictionary
+
+    adjacent_tile returns whether a given tile is adjacent to the current tile
+    """
 
     def __init__(self, tile_id, resource_type, roll_num, edges, intersections, has_robber=False):
         self.tile_id = tile_id
