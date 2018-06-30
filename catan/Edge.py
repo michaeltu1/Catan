@@ -12,6 +12,7 @@ class Edge:
     def id(self):
         return self.edge_ID
 
+    # Todo: Implement BFS in Python to determine longest road
 
 if __name__ == '__main__':
     test_edge = Edge(50, 20)
