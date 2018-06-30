@@ -19,6 +19,11 @@ class Tile:
                 return True
         return False
 
+    def __str__(self):
+        # print the attributes of this tile
+        return "Tile id: %s, roll num: %s, resource: %s" % (self.tile_id, self.roll_num, self.resource_type) 
+
+
 #e = set()
 #i = set()
 #example_tile = Tile(0, "Wheat", 6, e, i)
