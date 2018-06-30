@@ -9,19 +9,18 @@ class Tile:
     adjacent_tile returns whether a given tile is adjacent to the current tile
     """
 
-    def __init__(self, tile_id, resource_type, roll_num, edges, intersections, has_robber=False):
+    def __init__(self, tile_id, resource_type, roll_num, has_robber=False):
         self.tile_id = tile_id
         self.resource_type = resource_type
         self.roll_num = roll_num
-        self.edges = edges
-        self.intersections = intersections
         self.has_robber = has_robber
     
     def adjacent_tile(self, tile_other):
-        for edge in self.edges:
-            if edge in tile_other.edges:
-                return True
-        return False
+        other_id = tile_other.tile_id
+        my_id = self.tile_id
+        return my_id + 2 == other_id or my_id + 9 == other_id or my_id + 11 == other_id or \
+               my_id - 2 == other_id or my_id - 9 == other_id or my_id - 11 == other_id
+
 
     def __str__(self):
         # print the attributes of this tile
