@@ -10,9 +10,9 @@ class Intersection:
     By default, no intersections will not have settlements or cities on them.
     """
 
-    def __init__(self, tile_1, tile_2, tile_3):
+    def __init__(self, tile_1, tile_2, tile_3, port=None):
         self.intersect_ID = (tile_1, tile_2, tile_3)
-        self.has_port = False
+        self.port = port
         self.has_settlement = False
         self.has_city = False
 
@@ -20,16 +20,9 @@ class Intersection:
     Start with an empty set in Game, then add intersections to the 
         set if you can no longer build on that intersection.
     """
-    def build(self):
-        # if not (self.has_city or self.has_settlement):
-        #     for intersection in Board.intersections:
-        #
-        #         return True
+
+    def buildable(self):
         if self.intersect_ID not in Game.unbuildable:
-            Game.unbuildable.add(self.intersect_ID)
-            Game.unbuildable.add((self.intersect_ID.index(0) + 20,
-                                  self.intersect_ID.index(1), self.intersect_ID.index(2)))
-            Game.unbuildable.add((self.intersect_ID.index(0),
-                                  self.intersect_ID.index(1) - 7, self.intersect_ID.index(2)))
-            Game.unbuildable.add((self.intersect_ID.index(0),
-                                  self.intersect_ID.index(1), self.intersect_ID.index(2) - 13))
+            return True
+        else:
+            return False
