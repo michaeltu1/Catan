@@ -1,6 +1,5 @@
 import random
 
-# TODO(mtu): figure out how imports work
 from catan.config.Config import Config
 from catan.Tile import Tile
 from catan.Utils import *
@@ -26,13 +25,13 @@ class Board:
                               -4, -2, 0, 2, 4,
                               -13, -11, -9, -7,
                               -22, -20, -18]
-        self.ocean_tile_ids = [1030, 1032, 1034, 1036,
-                               1020, 1026,
-                               1010, 1016,
-                               1000, 1006,
-                               990, 996,
-                               980, 986,
-                               970, 972, 974, 976]
+        self.ocean_tile_ids = [27, 29, 31, 33,
+                               16, 24,
+                               5, 15,
+                               -6, 6,
+                               -15, -5,
+                               -24, -16,
+                               -33, -31, -29, -27]
         self.collectible_resource_types = ["Wheat"] * 4 + ["Sheep"] * 4 + ["Ore"] * 3 + ["Clay"] * 3 + ["Wood"] * 4
 
         self.port_types = ["Sheep", "Clay", "Wood", "Wheat", "Ore"] + ["3:1"] * 4
@@ -96,14 +95,14 @@ class Board:
 
         # Design all land tile configurations except for the desert tile
         for tile_id, resource, roll_num in self.land_tile_ids[:-1], self.collectible_resource_types, self.roll_nums:
-            tile_configs.append([tile_id, resource, roll_num, set(), set()])
+            tile_configs.append([tile_id, resource, roll_num])
 
         # Design desert tile configuration
-        tile_configs.append([tile_id, resource, roll_num, set(), set(), True])
+        tile_configs.append([tile_id, resource, roll_num, True])
 
         # Design all ocean tile configs
         for tile_id in self.ocean_tile_ids:
-            tile_configs.append([tile_id, "Ocean", -1, set(), set()])
+            tile_configs.append([tile_id, "Ocean", 0])
 
         # Instantiate all tiles with given config
         tile_objects = []
@@ -111,8 +110,35 @@ class Board:
             tile_objects.append(Tile(*config))
 
         # Construct all edges here
+        edge_ids = [(18, 27), (18, 29), (20, 29), (20, 31), (22, 31), (22, 33),
+                    (16, 18), (18, 20), (20, 22), (22, 24),
+                    (7, 16), (7, 18), (9, 18), (9, 20), (11, 20), (11, 22), (13, 22), (13, 24),
+                    (5, 7), (7, 9), (9, 11), (11, 13), (13, 15),
+                    (-4, 5), (-4, 7), (-2, 7), (-2, 9), (0, 9), (0, 11), (2, 11), (2, 13), (4, 13), (4, 15),
+                    (-6, -4), (-4, -2), (-2, 0), (0, 2), (2, 4), (4, 6),
+                    (-15, -4), (-13, -4), (-13, -2), (-11, -2), (-11, 0), (-9, 0), (-9, 2), (-7, 2), (-7, 4), (-5, 4),
+                    (-15, -13), (-13, -11), (-11, -9), (-9, -7), (-7, -5),
+                    (-24, -13), (-22, -13), (-22, -11),(-20, -11), (-20, -9), (-18, -9), (-18, -7), (-16, -7),
+                    (-24, -22), (-22, -20), (-20, -18), (-18, -16),
+                    (-33, -22), (-31, -22), (-31, -20), (-29, -20), (-29, -18), (-27, -18)]
 
-        # Construct all intersections here
+        # Construct all intersections here -- some have ports!!
+        intersection_ids = [(, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
+                            (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),]
 
         return tile_objects
 
