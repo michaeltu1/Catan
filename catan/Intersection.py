@@ -16,8 +16,10 @@ class Intersection:
         self.has_settlement = False
         self.has_city = False
 
-    # TODO: need to update set of intersections on which we can build.
-    # Start with an empty set, then add intersections to the set if you cannot build an intersection on that spot
+    """
+    Start with an empty set in Game, then add intersections to the 
+        set if you can no longer build on that intersection.
+    """
     def build(self):
         # if not (self.has_city or self.has_settlement):
         #     for intersection in Board.intersections:
@@ -25,6 +27,9 @@ class Intersection:
         #         return True
         if self.intersect_ID not in Game.unbuildable:
             Game.unbuildable.add(self.intersect_ID)
-            Game.unbuildable.add((self.intersect_ID.index(0), self.intersect_ID.index(1), top_tile_ID))
-            Game.unbuildable.add((self.intersect_ID.index(1), self.intersect_ID.index(2), bottomleft_tile_ID))
-            Game.unbuildable.add((self.intersect_ID.index(0), self.intersect_ID.index(2), bottomright_tile_ID))
+            Game.unbuildable.add((self.intersect_ID.index(0) + 20,
+                                  self.intersect_ID.index(1), self.intersect_ID.index(2)))
+            Game.unbuildable.add((self.intersect_ID.index(0),
+                                  self.intersect_ID.index(1) - 7, self.intersect_ID.index(2)))
+            Game.unbuildable.add((self.intersect_ID.index(0),
+                                  self.intersect_ID.index(1), self.intersect_ID.index(2) - 13))
