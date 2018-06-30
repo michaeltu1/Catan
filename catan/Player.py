@@ -1,6 +1,7 @@
 
 
 # originally in intersection but moved to here
+# need to update board or game with updated intersection attributes (has_settlement or has_city)
 def build(self):
     if self.intersect_ID not in Game.unbuildable:
         Game.unbuildable.add(self.intersect_ID)
