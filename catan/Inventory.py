@@ -9,12 +9,13 @@ class Inventory:
     TODO: Figure out how to represents ports, location of port comes from intersection,
     but need to also know what type of port and quantity.
     """
-    def __init__(self, resource_cards={}, dev_cards={}, ports=set() longest_road=False, largest_army=False):
+    def __init__(self, resource_cards={}, dev_cards={}, ports=set(), longest_road=False, largest_army=False):
         self.resource_cards = resource_cards
         self.dev_cards = dev_cards
         self.ports = ports
         self.longest_road = longest_road
         self.largest_army = largest_army
+
 
 class Backpack(Inventory):
     """
