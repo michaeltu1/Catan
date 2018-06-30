@@ -21,8 +21,12 @@ class Intersection:
         set if you can no longer build on that intersection.
     """
 
-    def buildable(self):
-        if self.intersect_ID not in Game.unbuildable:
-            return True
-        else:
-            return False
+    def can_build_settlement(self):
+        return self.intersect_ID not in Game.unbuildable
+
+    """
+    Can only build a city on top of a settlement.
+    """
+
+    def can_build_city(self):
+        return self.has_settlement
