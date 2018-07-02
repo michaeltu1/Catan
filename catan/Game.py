@@ -8,64 +8,53 @@ class Game:
 
         self.game_resources = Inventory(resource_cards, dev_cards)
 
-    """
-    Take in a player_id and attempt to build a road at an edge tuple (x, y)
-    returns true if successful, otherwise false.
-    """
-    def build_road(self, player_id, edge):
-        if edge.has_road is False:
-            edge.has_road = True
-            # check longest road
-            return True
-        return False
+"""
+Take in a player_id and attempt to build a road at an edge tuple (x, y)
+returns true if successful, otherwise false.
+"""
+def build_road(player_id, edge):
+    return False
 
-    """
-    Take in a player_id and attempt to build a settlement at an intersection tuple (x, y, z)
-    returns true if successful, otherwise false.
-    
-    Start with an empty set in Game, then add intersections to the 
-        set if you can no longer build on that intersection.
-    """
-    def build_settlement(self, player_id, intersection):
-        if intersection not in Game.unbuildable:
-            Game.unbuildable.add(intersection)
-            Game.unbuildable.add((intersection.index(0) + 20,
-                                  intersection.index(1), intersection.index(2)))
-            Game.unbuildable.add((intersection.index(0),
-                                  intersection.index(1) - 7, intersection.index(2)))
-            Game.unbuildable.add((intersection.index(0),
-                                  intersection.index(1), intersection.index(2) - 13))
-            intersection.has_settlement = True
-            # check longest road
-            return True
-        return False
+"""
+Take in a player_id and attempt to build a settlement at an intersection tuple (x, y, z)
+returns true if successful, otherwise false.
+"""
+def build_settlement(player_id, intersection):
+    return False
 
-    """
-    Take in a player_id and attempt to build a city at an intersection tuple (x, y, z)
-    returns true if successful, otherwise false.
-    """
-    def build_city(self, player_id, intersection):
-        if intersection.has_settlement is True:
-            intersection.has_city = True
-            intersection.has_settlement = False
-            return True
-        return False
+# originally in intersection but moved to here
+# need to update board or game with updated intersection attributes (has_settlement or has_city)
+def build_settlement():
+    if self.intersect_ID not in Game.unbuildable:
+        Game.unbuildable.add(self.intersect_ID)
+        Game.unbuildable.add((self.intersect_ID.index(0) + 20, self.intersect_ID.index(1), self.intersect_ID.index(2)))
+        Game.unbuildable.add((self.intersect_ID.index(0), self.intersect_ID.index(1) - 7, self.intersect_ID.index(2)))
+        Game.unbuildable.add((self.intersect_ID.index(0), self.intersect_ID.index(1), self.intersect_ID.index(2) - 13))
 
-    """
-    Take in a player_id and attempt to buy a dev card
-    returns true if successful and will add the dev card to player's backpack, otherwise returns false
-    """
-    def buy_dev_card(self, player_id):
-        return False
+"""
+Take in a player_id and attempt to build a city at an intersection tuple (x, y, z)
+returns true if successful, otherwise false.
+"""
 
-    """
-    Take in a player_id and two resource types;
-    By default it's a 4:1 trade from resource_1 -> resource_2
-    if other_player_id is positive then attempt to trade with other player
-    else if port_name is not None: do a trade according to the port type and resource_1 and resource_2
-    returns True if trade was successful, otherwise prints out what went wrong and returns false.
-    """
-    def trade(self, player_id, resource_1, resource_2, other_player_id=0, port_name=None):
-        return True
+def build_city(player_id, intersection):
+    return False
+
+
+"""
+Take in a player_id and attempt to buy a dev card
+returns true if successful and will add the dev card to player's backpack, otherwise returns false
+"""
+def buy_dev_card(player_id):
+    returns False
+
+"""
+Take in a player_id and two resource types;
+By default it's a 4:1 trade from resource_1 -> resource_2
+if other_player_id is positive then attempt to trade with other player
+else if port_name is not None: do a trade according to the port type and resource_1 and resource_2
+returns True if trade was successful, otherwise prints out what went wrong and returns false.
+"""
+def trade(player_id, resource_1, resource_2, other_player_id=0, port_name=None):
+    return True
 
 
