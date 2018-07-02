@@ -3,28 +3,30 @@ class Inventory:
     Game.py should initialize the dictionary of resource and dev cards
     should map resource type (key) to number of that type of card (value), 
     also initialize ports
-    and initialize longest_road and largest_army to true;
+
+    Move longest road /largest_army to game.py and have it keep track of player id
     a player by default has no cards and no ports
 
-    TODO: Figure out how to represents ports, location of port comes from intersection,
-    but need to also know what type of port and quantity.
     """
-    def __init__(self, resource_cards={}, dev_cards={}, ports=set(), longest_road=False, largest_army=False):
+    def __init__(self, resource_cards={}, dev_cards={}):
         self.resource_cards = resource_cards
         self.dev_cards = dev_cards
-        self.ports = ports
-        self.longest_road = longest_road
-        self.largest_army = largest_army
 
 
 class Backpack(Inventory):
     """
-    Each Player has a backpack that keeps track of all the player's possessions
-    cities and settlements should be a set of intersection tuples
-    roads should be a set of edge ids (tentative, since we don't know how two edges connect)
+    Each Player has a backpack that keeps track of all the player's possessions;
+    Tile dictionary maps tile_id to number of resource collected
+    roads should be a set of edge tuples
     """
-    def __init__(self, cities=set(), settlements=set(), roads=set()):
+    def __init__(self, num_settlements, num_cities, num_roads, victory_points=0, tiles={}, roads=set(), ports=set()):
         Inventory.__init__(self)
-        self.cities = cities
-        self.settlements = settlements
+        self.num_settlements = num_settlements
+        self.num_cities = num_cities
+        self.num_roads = num_roads
+        self.victory_points = victory_points
+        self.tiles = tiles
         self.roads = roads
+        self.ports = ports
+
+#ex_backpack = Backpack(5, 4, 15)

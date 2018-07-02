@@ -21,7 +21,6 @@ class Tile:
         return my_id + 2 == other_id or my_id + 9 == other_id or my_id + 11 == other_id or \
                my_id - 2 == other_id or my_id - 9 == other_id or my_id - 11 == other_id
 
-
     def __str__(self):
         # print the attributes of this tile
         return "Tile id: %s, roll num: %s, resource: %s" % (self.tile_id, self.roll_num, self.resource_type) 

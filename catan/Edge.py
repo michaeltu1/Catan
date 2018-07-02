@@ -11,7 +11,7 @@ class Edge:
 
     # TODO: Implement BFS in Python to determine longest road
     def build_road(self):
-        
+
         self.has_road = True
 
 
