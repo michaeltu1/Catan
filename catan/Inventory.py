@@ -12,6 +12,9 @@ class Inventory:
         self.resource_cards = resource_cards
         self.dev_cards = dev_cards
 
+    def __str(self):
+        return "resource cards: %s, dev cards %s" % (self.resource_cards, self.dev_cards)
+
 
 class Backpack(Inventory):
     """
@@ -28,5 +31,10 @@ class Backpack(Inventory):
         self.tiles = tiles
         self.roads = roads
         self.ports = ports
+
+    def __str__(self):
+        return "settlements: %s, cities: %s, roads: %s, victory points: %s, tiles: %s, roads: %s, ports: %s" % \
+                (self.num_settlements, self.num_cities, self.num_roads, self.victory_points, self.tiles, \
+                 self.roads, self.ports)
 
 #ex_backpack = Backpack(5, 4, 15)
