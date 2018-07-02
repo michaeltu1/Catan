@@ -1,6 +1,3 @@
-from catan.Game import *
-
-
 class Intersection:
 
     """
@@ -15,18 +12,6 @@ class Intersection:
         self.port = port
         self.has_settlement = False
         self.has_city = False
-
-    """
-    Start with an empty set in Game, then add intersections to the 
-        set if you can no longer build on that intersection.
-    """
-
-    def can_build_settlement(self):
-        return self.intersect_ID not in Game.unbuildable
-
-    def build_city(self):
-        self.has_city = True
-        self.has_settlement = False
 
     # def build_settlement(self, intersect_id):
     #     if intersect_id not in Game.unbuildable:

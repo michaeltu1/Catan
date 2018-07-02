@@ -8,7 +8,6 @@ class Game:
 
         self.game_resources = Inventory(resource_cards, dev_cards)
 
-
     """
     Take in a player_id and attempt to build a road at an edge tuple (x, y)
     returns true if successful, otherwise false.
@@ -20,10 +19,12 @@ class Game:
             return True
         return False
 
-
     """
     Take in a player_id and attempt to build a settlement at an intersection tuple (x, y, z)
     returns true if successful, otherwise false.
+    
+    Start with an empty set in Game, then add intersections to the 
+        set if you can no longer build on that intersection.
     """
     def build_settlement(self, player_id, intersection):
         if intersection not in Game.unbuildable:
@@ -44,11 +45,11 @@ class Game:
     returns true if successful, otherwise false.
     """
     def build_city(self, player_id, intersection):
-         if intersection.has_settlement is True:
+        if intersection.has_settlement is True:
             intersection.has_city = True
             intersection.has_settlement = False
             return True
-         return False
+        return False
 
     """
     Take in a player_id and attempt to buy a dev card
