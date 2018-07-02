@@ -14,6 +14,10 @@ class Game:
     returns true if successful, otherwise false.
     """
     def build_road(self, player_id, edge):
+        if edge.has_road is False:
+            edge.has_road = True
+            # check longest road
+            return True
         return False
 
 
@@ -22,6 +26,17 @@ class Game:
     returns true if successful, otherwise false.
     """
     def build_settlement(self, player_id, intersection):
+        if intersection not in Game.unbuildable:
+            Game.unbuildable.add(intersection)
+            Game.unbuildable.add((intersection.index(0) + 20,
+                                  intersection.index(1), intersection.index(2)))
+            Game.unbuildable.add((intersection.index(0),
+                                  intersection.index(1) - 7, intersection.index(2)))
+            Game.unbuildable.add((intersection.index(0),
+                                  intersection.index(1), intersection.index(2) - 13))
+            intersection.has_settlement = True
+            # check longest road
+            return True
         return False
 
     """
@@ -29,14 +44,18 @@ class Game:
     returns true if successful, otherwise false.
     """
     def build_city(self, player_id, intersection):
-        return False
+         if intersection.has_settlement is True:
+            intersection.has_city = True
+            intersection.has_settlement = False
+            return True
+         return False
 
     """
     Take in a player_id and attempt to buy a dev card
     returns true if successful and will add the dev card to player's backpack, otherwise returns false
     """
     def buy_dev_card(self, player_id):
-        returns False
+        return False
 
     """
     Take in a player_id and two resource types;

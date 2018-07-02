@@ -24,13 +24,19 @@ class Intersection:
     def can_build_settlement(self):
         return self.intersect_ID not in Game.unbuildable
 
-    """
-    Can only build a city on top of a settlement.
-    """
-
-    def can_build_city(self):
-        return self.has_settlement
-
     def build_city(self):
         self.has_city = True
         self.has_settlement = False
+
+    # def build_settlement(self, intersect_id):
+    #     if intersect_id not in Game.unbuildable:
+    #         Game.unbuildable.add(intersect_id)
+    #         Game.unbuildable.add((intersect_id.index(0) + 20,
+    #                               intersect_id.index(1), intersect_id.index(2)))
+    #         Game.unbuildable.add((intersect_id.index(0),
+    #                               intersect_id.index(1) - 7, intersect_id.index(2)))
+    #         Game.unbuildable.add((intersect_id.index(0),
+    #                               intersect_id.index(1), intersect_id.index(2) - 13))
+    #         # TODO: somehow reach intersection object from intersect ID
+    #         "???".has_settlement = True
+    #         # check longest road
