@@ -37,6 +37,7 @@ class Board:
         self.collectible_resource_types = ["Wheat"] * 4 + ["Sheep"] * 4 + ["Ore"] * 3 + ["Clay"] * 3 + ["Wood"] * 4
         self.port_types = ["Sheep", "Clay", "Wood", "Wheat", "Ore"] + ["3:1"] * 4
         self.roll_nums = [2] + [3, 4, 5, 6, 8, 9, 10, 11] * 2 + [12]
+        self.land_tile_objects = []
         self.tile_objects, self.edge_objects, self.intersection_objects = self.generate_random_board()
 
     def create_roll_num_assignment(self):
@@ -98,6 +99,7 @@ class Board:
 
         # Design desert tile configuration
         tile_configs.append([self.land_tile_ids[-1], "Desert", 0, True])
+        self.land_tile_objects = [Tile(*config) for config in tile_configs]
 
         # Design all ocean tile configs
         for tile_id in self.ocean_tile_ids:
@@ -155,13 +157,15 @@ class Board:
     def __str__(self):
         # Print out board tiles -- for each tile show (roll_num, resource)
         # Show where the ports are
-        print(len(self.tile_objects))
-        # return "{:^10}{:^10}{:^10}\n" \
-        #        "{:^10}{:^10}{:^10}{:^10}\n" \
-        #        "{:^10}{:^10}{:^10}{:^10}{:^10}\n" \
-        #        "{:^10}{:^10}{:^10}{:^10}\n" \
-        #        "{:^10}{:^10}{:^10}\n".format(*self.tile_objects)
-        return "{:^10}".format(*[1])
+        to_print = []
+        for t in self.land_tile_objects:
+            to_print.append(t.resource_type + " " + str(t.roll_num))
+
+        return "                    {:<20}{:<20}{:<20}\n\n" \
+               "          {:<20}{:<20}{:<20}{:<20}\n\n" \
+               "{:<20}{:<20}{:<20}{:<20}{:<20}\n\n" \
+               "          {:<20}{:<20}{:<20}{:<20}\n\n" \
+               "                    {:<20}{:<20}{:<20}".format(*to_print)
 
 
 if __name__ == '__main__':
