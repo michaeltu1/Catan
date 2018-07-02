@@ -93,10 +93,8 @@ class Board:
         tile_configs = []
 
         # Design all land tile configurations except for the desert tile
-        for tile_id in self.land_tile_ids[:-1]:
-            for resource in self.collectible_resource_types:
-                for roll_num in self.roll_nums:
-                    tile_configs.append([tile_id, resource, roll_num])
+        for i in range(18):
+            tile_configs.append([self.land_tile_ids[i], self.collectible_resource_types[i], [self.roll_nums[i]]])
 
         # Design desert tile configuration
         tile_configs.append([self.land_tile_ids[-1], "Desert", 0, True])
@@ -155,14 +153,15 @@ class Board:
         return tile_objects, edge_objects, non_port_intersection_objects + port_intersection_objects
 
     def __str__(self):
-        # Print out board tiles
+        # Print out board tiles -- for each tile show (roll_num, resource)
+        # Show where the ports are
         print(len(self.tile_objects))
         # return "{:^10}{:^10}{:^10}\n" \
         #        "{:^10}{:^10}{:^10}{:^10}\n" \
         #        "{:^10}{:^10}{:^10}{:^10}{:^10}\n" \
         #        "{:^10}{:^10}{:^10}{:^10}\n" \
         #        "{:^10}{:^10}{:^10}\n".format(*self.tile_objects)
-        return "{:^10}".format(*[print(self.tile_objects[0])])
+        return "{:^10}".format(*[1])
 
 
 if __name__ == '__main__':
