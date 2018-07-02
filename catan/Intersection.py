@@ -30,3 +30,7 @@ class Intersection:
 
     def can_build_city(self):
         return self.has_settlement
+
+    def build_city(self):
+        self.has_city = True
+        self.has_settlement = False

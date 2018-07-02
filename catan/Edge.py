@@ -9,10 +9,16 @@ class Edge:
         self.edge_ID = (tile_1, tile_2)
         self.has_road = False
 
-    # TODO: Implement BFS in Python to determine longest road
-    def build_road(self):
+    def build_road(self, edge_id):
+        if "???".has_road is False:
+            # TODO: somehow reach edge object from intersect ID
+            "???".has_road = True
+            # check longest road
 
-        self.has_road = True
+    # TODO: Implement BFS in Python to determine longest road when road/settlement is placed.
+
+    def check_longest_road(self):
+        return self.has_road
 
 
 if __name__ == '__main__':
