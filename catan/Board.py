@@ -2,6 +2,8 @@ import random
 
 from catan.config.Config import Config
 from catan.Tile import Tile
+from catan.Edge import Edge
+from catan.Intersection import Intersection
 from catan.Utils import *
 
 
@@ -33,10 +35,9 @@ class Board:
                                -24, -16,
                                -33, -31, -29, -27]
         self.collectible_resource_types = ["Wheat"] * 4 + ["Sheep"] * 4 + ["Ore"] * 3 + ["Clay"] * 3 + ["Wood"] * 4
-
         self.port_types = ["Sheep", "Clay", "Wood", "Wheat", "Ore"] + ["3:1"] * 4
-
         self.roll_nums = [2] + [3, 4, 5, 6, 8, 9, 10, 11] * 2 + [12]
+        self.tile_objects, self.edge_objects, self.intersection_objects = self.generate_random_board()
 
     def create_roll_num_assignment(self):
         """
@@ -85,8 +86,6 @@ class Board:
             valid_assignment = all(location_checks)
 
     def generate_random_board(self):
-        # TODO(mtu): assign ports to intersection
-        # TODO(mtu): construct edges, intersections, and tiles
         random.shuffle(self.collectible_resource_types)
         random.shuffle(self.port_types)
         self.create_roll_num_assignment()
@@ -94,20 +93,20 @@ class Board:
         tile_configs = []
 
         # Design all land tile configurations except for the desert tile
-        for tile_id, resource, roll_num in self.land_tile_ids[:-1], self.collectible_resource_types, self.roll_nums:
-            tile_configs.append([tile_id, resource, roll_num])
+        for tile_id in self.land_tile_ids[:-1]:
+            for resource in self.collectible_resource_types:
+                for roll_num in self.roll_nums:
+                    tile_configs.append([tile_id, resource, roll_num])
 
         # Design desert tile configuration
-        tile_configs.append([tile_id, resource, roll_num, True])
+        tile_configs.append([self.land_tile_ids[-1], "Desert", 0, True])
 
         # Design all ocean tile configs
         for tile_id in self.ocean_tile_ids:
             tile_configs.append([tile_id, "Ocean", 0])
 
         # Instantiate all tiles with given config
-        tile_objects = []
-        for config in tile_configs:
-            tile_objects.append(Tile(*config))
+        tile_objects = [Tile(*config) for config in tile_configs]
 
         # Construct all edges here
         edge_ids = [(18, 27), (18, 29), (20, 29), (20, 31), (22, 31), (22, 33),
@@ -122,24 +121,48 @@ class Board:
                     (-24, -22), (-22, -20), (-20, -18), (-18, -16),
                     (-33, -22), (-31, -22), (-31, -20), (-29, -20), (-29, -18), (-27, -18)]
 
-        edge_objects = [Edge(*config) for config in edge_configs]
+        edge_objects = [Edge(*edge_id) for edge_id in edge_ids]
 
         # Construct all intersections here -- some have ports!!
-        intersection_ids = [(-33, -24, -22), (-33, -31, -22), (-31, -22, -20), (-31, -29, -20), (-29, -20, -18),
-                            (-29, -27, -18), (-27, -18, -16), (-24, -15, -13), (-24, -22, -13), (-22, -13, -11),
-                            (-22, -20, -11), (-20, -11, -9), (-20, -18, -9), (-18, -9, -7), (-18, -16, -7),
-                            (-16, -7, -5), (-15, -6, -4), (-15, -13, -4), (-13, -4, -2), (-13, -11, -2), (-11, -2, 0),
-                            (-11, -9, 0), (-9, 0, 2), (-9, -7, 2), (-7, 2, 4), (-7, -5, 4), (-5, 4, 6), (-6, -4, 5),
-                            (-4, 5, 7), (-4, -2, 7), (-2, 7, 9), (-2, 0, 9), (0, 9, 11), (0, 2, 11), (2, 11, 13),
-                            (2, 4, 13), (4, 13, 15), (4, 6, 15), (5, 7, 16), (7, 16, 18), (7, 9, 18), (9, 18, 20),
-                            (9, 11, 20), (11, 20, 22), (11, 13, 22), (13, 22, 24), (13, 15, 24), (16, 18, 27),
-                            (18, 27, 29), (18, 20, 29), (20, 29, 31), (20, 22, 31), (22, 31, 33), (22, 24, 33)]
+        port_intersections = [[-31, -22, -20], [-31, -29, -20], [-29, -27, -18], [-27, -18, -16],
+                              [-24, -15, -13], [-24, -22, -13], [-16, -7, -5], [-7, -5, 4],
+                              [-15, -6, -4], [-6, -4, 5],
+                              [4, 13, 15], [13, 15, 24],
+                              [7, 16, 18], [16, 18, 27],
+                              [18, 20, 29], [20, 29, 31], [22, 31, 33], [22, 24, 33]]
 
-        return tile_objects
+        non_port_intersections = [(-33, -24, -22), (-33, -31, -22),
+                                  (-22, -13, -11),
+                                  (-22, -20, -11), (-20, -11, -9), (-20, -18, -9), (-18, -9, -7), (-18, -16, -7),
+                                  (-15, -13, -4), (-13, -4, -2), (-13, -11, -2), (-11, -2, 0),
+                                  (-11, -9, 0), (-9, 0, 2), (-9, -7, 2), (-7, 2, 4), (-5, 4, 6),
+                                  (-4, 5, 7), (-4, -2, 7), (-2, 7, 9), (-2, 0, 9), (0, 9, 11), (0, 2, 11), (2, 11, 13),
+                                  (2, 4, 13), (4, 6, 15), (5, 7, 16), (7, 9, 18), (9, 18, 20),
+                                  (9, 11, 20), (11, 20, 22), (11, 13, 22), (13, 22, 24),
+                                  (18, 27, 29), (20, 22, 31)]
+
+        for i in range(0, len(port_intersections), 2):
+            port = self.port_types[i // 2]
+            port_intersections[i].append(port)
+            port_intersections[i + 1].append(port)
+        # port_intersection_objects = [Intersection(*config) for config in port_intersections]
+        port_intersection_objects = []
+        for config in port_intersections:
+            port_intersection_objects.append(Intersection(*config))
+
+        non_port_intersection_objects = [Intersection(*intersection_id) for intersection_id in non_port_intersections]
+
+        return tile_objects, edge_objects, non_port_intersection_objects + port_intersection_objects
 
     def __str__(self):
-        # TODO(mtu): print the board
-        return "blah"
+        # Print out board tiles
+        print(len(self.tile_objects))
+        # return "{:^10}{:^10}{:^10}\n" \
+        #        "{:^10}{:^10}{:^10}{:^10}\n" \
+        #        "{:^10}{:^10}{:^10}{:^10}{:^10}\n" \
+        #        "{:^10}{:^10}{:^10}{:^10}\n" \
+        #        "{:^10}{:^10}{:^10}\n".format(*self.tile_objects)
+        return "{:^10}".format(*[print(self.tile_objects[0])])
 
 
 if __name__ == '__main__':
