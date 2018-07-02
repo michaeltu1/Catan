@@ -40,6 +40,12 @@ def roll_dice():
     return rolls[0] + rolls[1]
 
 """
+Given a player and roll_num, distribute resources according to what tiles the player owns
+"""
+def distribute_resources(player_id, roll_num):
+    
+
+"""
 Take in a player_id and attempt to build a road at an edge tuple (x, y)
 returns true if successful, otherwise false.
 """
