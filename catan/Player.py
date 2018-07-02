@@ -1,8 +1,11 @@
 from catan.Inventory import *
-from Catan.Game import *
+from catan.Game import *
+# Maybe don't need to import everything
 
 class Player:
-
+    """
+    Player can have a position in {North, East, South, West}
+    """
     def __init__(self, player_id, knights_played=0):
         self.player_id = player_id
         self.knights_played = knights_played
