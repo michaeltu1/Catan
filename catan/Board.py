@@ -82,7 +82,7 @@ class Board:
             for i in range(len(common_roll_locations)):
                 current_location = common_roll_locations[i]
                 other_locations = common_roll_locations[i + 1:]
-                location_checks.append(all([True if o in adj[current_location] else False for o in other_locations]))
+                location_checks.extend([True if o in adj[current_location] else False for o in other_locations])
 
             valid_assignment = all(location_checks)
 
@@ -145,10 +145,7 @@ class Board:
             port = self.port_types[i // 2]
             port_intersections[i].append(port)
             port_intersections[i + 1].append(port)
-        # port_intersection_objects = [Intersection(*config) for config in port_intersections]
-        port_intersection_objects = []
-        for config in port_intersections:
-            port_intersection_objects.append(Intersection(*config))
+        port_intersection_objects = [Intersection(*config) for config in port_intersections]
 
         non_port_intersection_objects = [Intersection(*intersection_id) for intersection_id in non_port_intersections]
 
@@ -156,10 +153,10 @@ class Board:
 
     def __str__(self):
         # Print out board tiles -- for each tile show (roll_num, resource)
-        # Show where the ports are
-        to_print = []
+        # TODO(mtu): Show where the ports are
+        to_print = [0] * 19
         for t in self.land_tile_objects:
-            to_print.append(t.resource_type + " " + str(t.roll_num))
+            to_print[self.land_tile_ids.index(t.tile_id)] = (t.resource_type + " " + str(t.roll_num))
 
         return "                    {:<20}{:<20}{:<20}\n\n" \
                "          {:<20}{:<20}{:<20}{:<20}\n\n" \
