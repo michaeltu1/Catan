@@ -122,6 +122,8 @@ class Board:
                     (-24, -22), (-22, -20), (-20, -18), (-18, -16),
                     (-33, -22), (-31, -22), (-31, -20), (-29, -20), (-29, -18), (-27, -18)]
 
+        edge_objects = [Edge(*config) for config in edge_configs]
+
         # Construct all intersections here -- some have ports!!
         intersection_ids = [(, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ), (, , ),
                             (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,), (, ,),
