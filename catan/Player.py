@@ -2,15 +2,18 @@ from catan.Inventory import *
 
 # originally in intersection but moved to here
 # need to update board or game with updated intersection attributes (has_settlement or has_city)
-def build_settlement(self):
-    if self.intersect_ID not in Game.unbuildable:
-        Game.unbuildable.add(self.intersect_ID)
-        Game.unbuildable.add((self.intersect_ID.index(0) + 20,
-                              self.intersect_ID.index(1), self.intersect_ID.index(2)))
-        Game.unbuildable.add((self.intersect_ID.index(0),
-                              self.intersect_ID.index(1) - 7, self.intersect_ID.index(2)))
-        Game.unbuildable.add((self.intersect_ID.index(0),
-                              self.intersect_ID.index(1), self.intersect_ID.index(2) - 13))
+def build_settlement(self, intersect_id):
+    if intersect_id not in Game.unbuildable:
+        Game.unbuildable.add(intersect_id)
+        Game.unbuildable.add((intersect_id.index(0) + 20,
+                              intersect_id.index(1), intersect_id.index(2)))
+        Game.unbuildable.add((intersect_id.index(0),
+                              intersect_id.index(1) - 7, intersect_id.index(2)))
+        Game.unbuildable.add((intersect_id.index(0),
+                              intersect_id.index(1), intersect_id.index(2) - 13))
+        # TODO: somehow reach intersection object from intersect ID
+        "???".has_settlement = True
+        # check longest road
 
 class Player:
 
