@@ -40,6 +40,9 @@ class Board:
         self.land_tile_objects = [0] * 19
         self.tile_objects, self.edge_objects, self.intersection_objects = self.generate_random_board()
 
+        self.edges = {e.edge_ID: e for e in self.edge_objects}
+        self.intersections = {i.intersect_ID: i for i in self.intersection_objects}
+
     def create_roll_num_assignment(self):
         """
         After the function is completed, we are guaranteed that high probability roll numbers
