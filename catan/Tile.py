@@ -25,6 +25,9 @@ class Tile:
         # print the attributes of this tile
         return "Tile id: %s, roll num: %s, resource: %s" % (self.tile_id, self.roll_num, self.resource_type) 
 
+    def __repr__(self):
+        return str(self)
+
 
 #e = set()
 #i = set()
