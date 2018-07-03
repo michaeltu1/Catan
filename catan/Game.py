@@ -44,10 +44,10 @@ class Game:
                 distribute_resources(player_id, roll_num)
             _ux(player_id, "build road")
         
-        while !self.game_over:
+        while not self.game_over:
             for player_id in range(player_first, player_first + num_players):
                 done = False
-                while !done:
+                while not done:
                     action = _ux(player_id, "ask for action")
                     done = _ux(player_id, action)
 
@@ -97,38 +97,38 @@ def _ux(player_id, action):
             response = input("That's not a valid action, please choose one from the following: %s" % actions)
         return response
 
-    else if action == "done":
+    elif action == "done":
         return True
-    else if action.split(" ")[0] == "build":
+    elif action.split(" ")[0] == "build":
         obj = action.split(" ")[1]
         build_location = input("Player %s, where would you like to build your %s ? " % (player_id, obj))
         if obj == "settlement":            
-            while !build_settlement(player_id, build_location):
+            while not build_settlement(player_id, build_location):
                 build_location = input("Sorry, you cannot build there, please choose another location: ")
-        else if obj == "city":
-            while !build_city(player_id, build_location):
+        elif obj == "city":
+            while not build_city(player_id, build_location):
                 build_location = input("Sorry, you cannot build there, please choose another location: ")
-        else if obj == "road":
-            while !build_road(player_id, build_location):
+        elif obj == "road":
+            while not build_road(player_id, build_location):
                 build_location = input("Sorry, you cannot build there, please choose another location: ")
 
-    else if action == "buy dev card":
+    elif action == "buy dev card":
         buy_dev_card(player_id)
 
-    else if action == "use dev card":
+    elif action == "use dev card":
         use_dev_card(player_id)
 
-    else if action == "trade": #TODO
+    elif action == "trade": #TODO
         response = input("What type of trade would you like to do? ")
         while response.lower() not in trades:
             response = input("That's not a valid trade, please choose from the following: %s" % trades)
         if response == "player":
             response = input("")
-        else if response == "port":
+        elif response == "port":
             response = input("Which port would you like to use? ")
             while response.lower() not in ports:
                 response = input("That's not a valid port, please choose from the following: %s" % ports)            
-        else if response == "4:1":
+        elif response == "4:1":
             response = input("")
     return False
 
