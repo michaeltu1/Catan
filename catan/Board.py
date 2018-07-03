@@ -37,8 +37,11 @@ class Board:
         self.collectible_resource_types = ["Wheat"] * 4 + ["Sheep"] * 4 + ["Ore"] * 3 + ["Clay"] * 3 + ["Wood"] * 4
         self.port_types = ["Sheep", "Clay", "Wood", "Wheat", "Ore"] + ["3:1"] * 4
         self.roll_nums = [2] + [3, 4, 5, 6, 8, 9, 10, 11] * 2 + [12]
-        self.land_tile_objects = []
+        self.land_tile_objects = [0] * 19
         self.tile_objects, self.edge_objects, self.intersection_objects = self.generate_random_board()
+
+        self.edges = {e.edge_ID: e for e in self.edge_objects}
+        self.intersections = {i.intersect_ID: i for i in self.intersection_objects}
 
     def create_roll_num_assignment(self):
         """
@@ -78,27 +81,36 @@ class Board:
             # Find the indices of the land_tile_ids that will have the high probability dice rolls
             common_roll_locations = [index for index, roll_num in enumerate(self.roll_nums) if roll_num in common_rolls]
 
+            # Check at all points with high frequency rolls that it is not next to another high frequency roll
             location_checks = [True]
             for i in range(len(common_roll_locations)):
                 current_location = common_roll_locations[i]
                 other_locations = common_roll_locations[i + 1:]
-                location_checks.extend([True if o in adj[current_location] else False for o in other_locations])
+                location_checks.extend([False if o in adj[current_location] else True for o in other_locations])
 
             valid_assignment = all(location_checks)
 
     def generate_random_board(self):
+        # Randomize resource and port locations
         random.shuffle(self.collectible_resource_types)
         random.shuffle(self.port_types)
+
+        # Generate a valid, random dice roll arrangement
         self.create_roll_num_assignment()
 
+        # List of tile configs used to instantiate tiles
         tile_configs = []
+
+        # Randomize order of tile_id assignment
+        tile_ids = self.land_tile_ids.copy()
+        random.shuffle(tile_ids)
 
         # Design all land tile configurations except for the desert tile
         for i in range(18):
-            tile_configs.append([self.land_tile_ids[i], self.collectible_resource_types[i], [self.roll_nums[i]]])
+            tile_configs.append([tile_ids[i], self.collectible_resource_types[i], [self.roll_nums[i]]])
 
         # Design desert tile configuration
-        tile_configs.append([self.land_tile_ids[-1], "Desert", 0, True])
+        tile_configs.append([tile_ids[-1], "Desert", 0, True])
         self.land_tile_objects = [Tile(*config) for config in tile_configs]
 
         # Design all ocean tile configs
@@ -108,7 +120,7 @@ class Board:
         # Instantiate all tiles with given config
         tile_objects = [Tile(*config) for config in tile_configs]
 
-        # Construct all edges here
+        # List of edge_ids used to construct edges
         edge_ids = [(18, 27), (18, 29), (20, 29), (20, 31), (22, 31), (22, 33),
                     (16, 18), (18, 20), (20, 22), (22, 24),
                     (7, 16), (7, 18), (9, 18), (9, 20), (11, 20), (11, 22), (13, 22), (13, 24),
@@ -123,7 +135,7 @@ class Board:
 
         edge_objects = [Edge(*edge_id) for edge_id in edge_ids]
 
-        # Construct all intersections here -- some have ports!!
+        # List of intersection ids with ports (every 2 consecutive ids have the same port type)
         port_intersections = [[-31, -22, -20], [-31, -29, -20], [-29, -27, -18], [-27, -18, -16],
                               [-24, -15, -13], [-24, -22, -13], [-16, -7, -5], [-7, -5, 4],
                               [-15, -6, -4], [-6, -4, 5],
@@ -131,6 +143,7 @@ class Board:
                               [7, 16, 18], [16, 18, 27],
                               [18, 20, 29], [20, 29, 31], [22, 31, 33], [22, 24, 33]]
 
+        # List of intersection ids without ports
         non_port_intersections = [(-33, -24, -22), (-33, -31, -22),
                                   (-22, -13, -11),
                                   (-22, -20, -11), (-20, -11, -9), (-20, -18, -9), (-18, -9, -7), (-18, -16, -7),
@@ -153,16 +166,17 @@ class Board:
 
     def __str__(self):
         # Print out board tiles -- for each tile show (roll_num, resource)
-        # TODO(mtu): Show where the ports are
         to_print = [0] * 19
         for t in self.land_tile_objects:
             to_print[self.land_tile_ids.index(t.tile_id)] = (t.resource_type + " " + str(t.roll_num))
 
-        return "                    {:<20}{:<20}{:<20}\n\n" \
+        port_printable = [io.port for io in self.intersection_objects[-18:]]
+
+        return "\n                    {:<20}{:<20}{:<20}\n\n" \
                "          {:<20}{:<20}{:<20}{:<20}\n\n" \
                "{:<20}{:<20}{:<20}{:<20}{:<20}\n\n" \
                "          {:<20}{:<20}{:<20}{:<20}\n\n" \
-               "                    {:<20}{:<20}{:<20}".format(*to_print)
+               "                    {:<20}{:<20}{:<20}\n".format(*to_print) + "\n" + str(port_printable)
 
 
 if __name__ == '__main__':
