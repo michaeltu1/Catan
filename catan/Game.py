@@ -64,16 +64,29 @@ class Game:
                     print("Player %s has won the game" % player_id)
 
     """
+    Returns the sum of two dice rolls
+    """
+    def roll_dice(self):
+        return np.random.choice(self.board.distribution)
+
+    """
     Given a player and roll_num, distribute resources according to what tiles the player owns
     """
     def distribute_resources(self, player_id, roll_num):
-       player = self.player_list[player_id]
-       rolls = player.backpack.rolls
-       if roll_num in rolls:
-           tiles = rolls[roll_num] #set of tile ids
-           for tile in tiles:
-               resource = self.tiles[tile].resource_type 
-               quantity = player.backpack.tiles[tile]
+        player = self.player_list[player_id]
+        rolls = player.backpack.rolls
+        if roll_num in rolls.keys():
+            tiles = rolls[roll_num] #set of tile ids
+            for tile in tiles:
+                resource = self.tiles[tile].resource_type 
+                quantity = player.backpack.tiles[tile]
+                remaining = self.game_resources.resource_cards[resource]
+                if remaining == 0:
+                    print("No more %s left" % resource)
+                elif remaining < quantity:
+                    print("There's only %s %s left" % (quantity, resource))
+                self.game_resources.resource_cards[resource] -= min(quantity, remaining)
+                player.backpack.resource_cards[resource] = min(quantity, remaining)
 
 
     """
@@ -189,12 +202,6 @@ class Game:
 #b = game.player_list[0].backpack
 #print(b), can't print out actual information for some reason
 
-"""
-Returns the sum of two dice rolls
-"""
-def roll_dice():
-    rolls = np.random.choice([1, 2, 3, 4, 5, 6], 2)
-    return rolls[0] + rolls[1]
 
 """
 Decides which player goes first
