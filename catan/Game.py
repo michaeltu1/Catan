@@ -13,13 +13,13 @@ class Game:
 
         self.game_resources = Inventory(resource_cards, dev_cards)
         self.board = Board()
-        self.tiles = {tile.tile_id : tile for tile in self.board.land_tile_objects}
+        self.tiles = self.board.land_tiles
         self.game_over = False
 
 
     def play(self, num_players):
         self.player_list = {}
-        #can get rid of ids, since dict keys have them already?
+        #TODO can get rid of ids, since dict keys have them already?
         player_ids = []
 
         # Create players, player_id starts at 1 
@@ -30,7 +30,6 @@ class Game:
         
         # Decide who goes first
         player_first = _starter(player_ids)
-
         
         # First round of choosing settlements and roads
         for player_id in range(player_first, player_first + num_players):
@@ -67,7 +66,7 @@ class Game:
     Returns the sum of two dice rolls
     """
     def roll_dice(self):
-        return np.random.choice(self.board.distribution)
+        return np.random.choice(np.arange(13), p=self.board.distribution)
 
     """
     Given a player and roll_num, distribute resources according to what tiles the player owns
@@ -86,7 +85,9 @@ class Game:
                 elif remaining < quantity:
                     print("There's only %s %s left" % (quantity, resource))
                 self.game_resources.resource_cards[resource] -= min(quantity, remaining)
-                player.backpack.resource_cards[resource] = min(quantity, remaining)
+                if resource not in player.backpack.resource_cards.keys():
+                    player.backpack.resource_cards[resource] = 0
+                player.backpack.resource_cards[resource] += min(quantity, remaining)
 
 
     """
