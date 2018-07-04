@@ -19,17 +19,14 @@ class Game:
 
     def play(self, num_players):
         self.player_list = {}
-        #TODO can get rid of ids, since dict keys have them already?
-        player_ids = []
 
         # Create players, player_id starts at 1 
         for number in range(num_players):
             player = Player(number)
             self.player_list[number] = player
-            player_ids.append(number)
         
         # Decide who goes first
-        player_first = _starter(player_ids)
+        player_first = _starter(player_list.keys())
         
         # First round of choosing settlements and roads
         for player_id in range(player_first, player_first + num_players):
@@ -69,6 +66,7 @@ class Game:
         return np.random.choice(np.arange(13), p=self.board.distribution)
 
     """
+    TODO: Fix why all the players are getting resources
     Given a player and roll_num, distribute resources according to what tiles the player owns
     """
     def distribute_resources(self, player_id, roll_num):
@@ -218,7 +216,6 @@ class Game:
 #b = game.player_list[0].backpack
 #print(b), can't print out actual information for some reason
 
-
 """
 Decides which player goes first
 returns the player_id that wins
@@ -235,7 +232,4 @@ def _starter(player_ids):
         highest_roll = 0
         player_rolls.clear()
     return player_ids[0]
-
-
-
 
