@@ -40,6 +40,7 @@ class Board:
         self.land_tile_objects = [0] * 19
         self.tile_objects, self.edge_objects, self.intersection_objects = self.generate_random_board()
 
+        self.land_tiles = {t.tile_id: t for t in self.tile_objects}
         self.edges = {e.edge_ID: e for e in self.edge_objects}
         self.intersections = {i.intersect_ID: i for i in self.intersection_objects}
 
