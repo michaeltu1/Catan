@@ -46,6 +46,9 @@ class Game:
         
         while not self.game_over:
             for player_id in range(player_first, player_first + num_players):
+                r = roll_dice()
+                distribute_resources(player_id, r)
+
                 done = False
                 while not done:
                     action = _ux(player_id, "ask for action")
@@ -54,6 +57,72 @@ class Game:
                 if self.player_list[player_id].backpack.victory_points == 10:
                     self.game_over = True
                     print("Player %s has won the game" % player_id)
+
+    """
+    Given a player and roll_num, distribute resources according to what tiles the player owns
+    """
+    def distribute_resources(self, player_id, roll_num):
+        
+
+    """
+    Take in a player_id and attempt to build a road at an edge tuple (x, y)
+    Need to update player's backpack's num_roads, roads
+    returns true if successful, otherwise false.
+    """
+    def build_road(self, player_id, edge):
+        return False
+
+    """
+    Take in a player_id and attempt to build a settlement at an intersection tuple (x, y, z)
+    Need to update player's backpack's num_settlements, victory_points, rolls, tiles, and ports if applicable
+    returns true if successful, otherwise false.
+
+    originally in intersection but moved to here
+    need to update board or game with updated intersection attributes (has_settlement or has_city)
+    """
+    def build_settlement(self, player_id, intersection):
+        if self.intersect_ID not in Game.unbuildable:
+            Game.unbuildable.add(self.intersect_ID)
+            Game.unbuildable.add((self.intersect_ID.index(0) + 20, self.intersect_ID.index(1), self.intersect_ID.index(2)))
+            Game.unbuildable.add((self.intersect_ID.index(0), self.intersect_ID.index(1) - 7, self.intersect_ID.index(2)))
+            Game.unbuildable.add((self.intersect_ID.index(0), self.intersect_ID.index(1), self.intersect_ID.index(2) - 13))
+        return False
+
+    """
+    Take in a player_id and attempt to build a city at an intersection tuple (x, y, z)
+    returns true if successful, otherwise false.
+    """
+
+    def build_city(self, player_id, intersection):
+        return False
+
+
+    """
+    Take in a player_id and attempt to buy a dev card
+    returns true if successful and will add the dev card to player's backpack, otherwise returns false
+    """
+    def buy_dev_card(self, player_id):
+        return False
+
+    """
+    Take in a player_id and use a dev card
+    make sure that the card wasn't bought in the same turn
+    returns true if used successfully, otherwise returns false
+    """
+
+    def use_dev_card(self, player_id):
+        return False
+
+
+    """
+    Take in a player_id and two resource types;
+    By default it's a 4:1 trade from resource_1 -> resource_2
+    if other_player_id is positive then attempt to trade with other player
+    else if port_name is not None: do a trade according to the port type and resource_1 and resource_2
+    returns True if trade was successful, otherwise prints out what went wrong and returns false.
+    """
+    def trade(self, player_id, resource_1, resource_2, other_player_id=-1, port_name=None):
+        return True
 
 #b = game.player_list[0].backpack
 #print(b), can't print out actual information for some reason
@@ -132,71 +201,5 @@ def _ux(player_id, action):
             response = input("")
     return False
 
-"""
-Given a player and roll_num, distribute resources according to what tiles the player owns
-"""
-def distribute_resources(player_id, roll_num):
-    
-
-"""
-Take in a player_id and attempt to build a road at an edge tuple (x, y)
-Need to update player's backpack's num_roads, roads
-returns true if successful, otherwise false.
-"""
-def build_road(player_id, edge):
-    return False
-
-"""
-Take in a player_id and attempt to build a settlement at an intersection tuple (x, y, z)
-Need to update player's backpack's num_settlements, victory_points, rolls, tiles, and ports if applicable
-returns true if successful, otherwise false.
-"""
-def build_settlement(player_id, intersection):
-    return False
-
-# originally in intersection but moved to here
-# need to update board or game with updated intersection attributes (has_settlement or has_city)
-def build_settlement():
-    if self.intersect_ID not in Game.unbuildable:
-        Game.unbuildable.add(self.intersect_ID)
-        Game.unbuildable.add((self.intersect_ID.index(0) + 20, self.intersect_ID.index(1), self.intersect_ID.index(2)))
-        Game.unbuildable.add((self.intersect_ID.index(0), self.intersect_ID.index(1) - 7, self.intersect_ID.index(2)))
-        Game.unbuildable.add((self.intersect_ID.index(0), self.intersect_ID.index(1), self.intersect_ID.index(2) - 13))
-
-"""
-Take in a player_id and attempt to build a city at an intersection tuple (x, y, z)
-returns true if successful, otherwise false.
-"""
-
-def build_city(player_id, intersection):
-    return False
-
-
-"""
-Take in a player_id and attempt to buy a dev card
-returns true if successful and will add the dev card to player's backpack, otherwise returns false
-"""
-def buy_dev_card(player_id):
-    return False
-
-"""
-Take in a player_id and use a dev card
-make sure that the card wasn't bought in the same turn
-returns true if used successfully, otherwise returns false
-"""
-
-def use_dev_card(player_id):
-    return False
-
-
-"""
-Take in a player_id and two resource types;
-By default it's a 4:1 trade from resource_1 -> resource_2
-if other_player_id is positive then attempt to trade with other player
-else if port_name is not None: do a trade according to the port type and resource_1 and resource_2
-returns True if trade was successful, otherwise prints out what went wrong and returns false.
-"""
-def trade(player_id, resource_1, resource_2, other_player_id=-1, port_name=None):
-    return True
 
 
