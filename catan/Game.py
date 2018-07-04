@@ -95,7 +95,11 @@ class Game:
     Need to update player's backpack's num_roads, roads
     returns true if successful, otherwise false.
     """
+
     def build_road(self, player_id, edge):
+        if edge.has_road is False:
+            edge.has_road = True
+            # Todo: consume resources, decrement number of buildable roads by 1, check longest road
         return False
 
     """
@@ -106,12 +110,19 @@ class Game:
     originally in intersection but moved to here
     need to update board or game with updated intersection attributes (has_settlement or has_city)
     """
+
     def build_settlement(self, player_id, intersection):
         if self.intersect_ID not in Game.unbuildable:
             Game.unbuildable.add(self.intersect_ID)
-            Game.unbuildable.add((self.intersect_ID.index(0) + 20, self.intersect_ID.index(1), self.intersect_ID.index(2)))
-            Game.unbuildable.add((self.intersect_ID.index(0), self.intersect_ID.index(1) - 7, self.intersect_ID.index(2)))
-            Game.unbuildable.add((self.intersect_ID.index(0), self.intersect_ID.index(1), self.intersect_ID.index(2) - 13))
+            Game.unbuildable.add(
+                (self.intersect_ID.index(0) + 20, self.intersect_ID.index(1), self.intersect_ID.index(2)))
+            Game.unbuildable.add(
+                (self.intersect_ID.index(0), self.intersect_ID.index(1) - 7, self.intersect_ID.index(2)))
+            Game.unbuildable.add(
+                (self.intersect_ID.index(0), self.intersect_ID.index(1), self.intersect_ID.index(2) - 13))
+            intersection.has_settlement = True
+            # Todo: consume resources, decrement number of buildable settlements by 1, check longest road
+            return True
         return False
 
     """
@@ -120,8 +131,12 @@ class Game:
     """
 
     def build_city(self, player_id, intersection):
+        if intersection.has_settlement:
+            intersection.has_settlement = False
+            intersection.has_city = True
+            # Todo: consume resources, decrement number of buildable cities by 1
+            return True
         return False
-
 
     """
     Take in a player_id and attempt to buy a dev card
