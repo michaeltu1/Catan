@@ -1,6 +1,7 @@
 from catan.Inventory import *
 # Maybe don't need to import everything
 
+
 class Player:
     
     def __init__(self, player_id, knights_played=0):
@@ -11,3 +12,6 @@ class Player:
     def __str__(self):
         return "Player id: %s, knights played: %s, backpack: %s" % \
                 (self.player_id, self.knights_played, self.backpack)
+
+    def __repr__(self):
+        return "Player(%s, %s, %s)" % (self.player_id, self.knights_played, self.backpack)

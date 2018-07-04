@@ -3,30 +3,29 @@ from catan.Player import Player
 from catan.Inventory import Inventory
 from catan.Board import Board
 
+
 class Game:
     def __init__(self):
         self.intersections = None
         self.unbuildable = set()
         
-        resource_cards = {"Wheat" : 19, "Sheep" : 19, "Ore" : 19, "Clay" : 19, "Wood" : 19}
-        dev_cards = {"Knight" : 14, "Victory Point" : 5, "Road Building" : 2, "Year of Plenty" : 2, "Monopoly" : 2}
+        resource_cards = {"Wheat": 19, "Sheep": 19, "Ore": 19, "Clay": 19, "Wood": 19}
+        dev_cards = {"Knight": 14, "Victory Point": 5, "Road Building": 2, "Year of Plenty": 2, "Monopoly": 2}
 
         self.game_resources = Inventory(resource_cards, dev_cards)
         self.board = Board()
         self.tiles = self.board.land_tiles
+        self.player_list = {}
         self.game_over = False
 
-
     def play(self, num_players):
-        self.player_list = {}
-
-        # Create players, player_id starts at 1 
+        # Create players, player_id starts at 1
         for number in range(num_players):
             player = Player(number)
             self.player_list[number] = player
-        
+
         # Decide who goes first
-        player_first = _starter(player_list.keys())
+        player_first = self._starter(self.player_list.keys())
         
         # First round of choosing settlements and roads
         for player_id in range(player_first, player_first + num_players):
@@ -47,7 +46,7 @@ class Game:
         
         while not self.game_over:
             for player_id in range(player_first, player_first + num_players):
-                r = roll_dice()
+                r = self.roll_dice()
                 self.distribute_resources(player_id, r)
 
                 done = False
@@ -73,7 +72,7 @@ class Game:
         player = self.player_list[player_id]
         rolls = player.backpack.rolls
         if roll_num in rolls.keys():
-            tiles = rolls[roll_num] #set of tile ids
+            tiles = rolls[roll_num]  # set of tile ids
             for tile in tiles:
                 resource = self.tiles[tile].resource_type 
                 quantity = player.backpack.tiles[tile]
@@ -87,13 +86,11 @@ class Game:
                     player.backpack.resource_cards[resource] = 0
                 player.backpack.resource_cards[resource] += min(quantity, remaining)
 
-
     """
     Take in a player_id and attempt to build a road at an edge tuple (x, y)
     Need to update player's backpack's num_roads, roads
     returns true if successful, otherwise false.
     """
-
     def build_road(self, player_id, edge):
         if edge.has_road is False:
             edge.has_road = True
@@ -152,7 +149,6 @@ class Game:
     def use_dev_card(self, player_id):
         return False
 
-
     """
     Take in a player_id and two resource types;
     By default it's a 4:1 trade from resource_1 -> resource_2
@@ -199,7 +195,7 @@ class Game:
         elif action == "use dev card":
             self.use_dev_card(player_id)
 
-        elif action == "trade": #TODO
+        elif action == "trade":  # TODO
             response = input("What type of trade would you like to do? ")
             while response.lower() not in trades:
                 response = input("That's not a valid trade, please choose from the following: %s" % trades)
@@ -213,23 +209,23 @@ class Game:
                 response = input("")
         return False
 
-#b = game.player_list[0].backpack
-#print(b), can't print out actual information for some reason
+# b = game.player_list[0].backpack
+# print(b), can't print out actual information for some reason
 
-"""
-Decides which player goes first
-returns the player_id that wins
-"""
-def _starter(player_ids):
-    highest_roll = 0
-    player_rolls = {}
-    while len(player_ids) > 1:
-        for player in player_ids:
-            r = roll_dice()
-            player_rolls[player] = r
-            highest_roll = r if r > highest_roll else highest_roll
-        player_ids = [k for k, v in player_rolls.items() if v == highest_roll]
+    """
+    Decides which player goes first
+    returns the player_id that wins
+    """
+    def _starter(self, player_ids):
         highest_roll = 0
-        player_rolls.clear()
-    return player_ids[0]
+        player_rolls = {}
+        while len(player_ids) > 1:
+            for player in player_ids:
+                r = self.roll_dice()
+                player_rolls[player] = r
+                highest_roll = r if r > highest_roll else highest_roll
+            player_ids = [k for k, v in player_rolls.items() if v == highest_roll]
+            highest_roll = 0
+            player_rolls.clear()
+        return player_ids[0]
 

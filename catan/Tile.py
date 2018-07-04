@@ -26,10 +26,10 @@ class Tile:
         return "Tile id: %s, roll num: %s, resource: %s" % (self.tile_id, self.roll_num, self.resource_type) 
 
     def __repr__(self):
-        return str(self)
+        return "Tile(%s, %s, %s, %s)" % (self.tile_id, self.resource_type, self.roll_num, self.has_robber)
 
 
-#e = set()
-#i = set()
-#example_tile = Tile(0, "Wheat", 6, e, i)
-#example_tile2 = Tile(1, "Desert", 7, e, i, True)
+# e = set()
+# i = set()
+# example_tile = Tile(0, "Wheat", 6, e, i)
+# example_tile2 = Tile(1, "Desert", 7, e, i, True)
