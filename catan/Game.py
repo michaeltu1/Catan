@@ -1,5 +1,7 @@
 import numpy as np
-from catan.Player import *
+from catan.Player import Player
+from catan.Inventory import Inventory
+from catan.Board import Board
 
 class Game:
     def __init__(self):
@@ -10,17 +12,20 @@ class Game:
         dev_cards = {"Knight" : 14, "Victory Point" : 5, "Road Building" : 2, "Year of Plenty" : 2, "Monopoly" : 2}
 
         self.game_resources = Inventory(resource_cards, dev_cards)
+        self.board = Board()
+        self.tiles = {tile.tile_id : tile for tile in self.board.land_tile_objects}
         self.game_over = False
 
 
-    def start_game(self, num_players):
-        self.player_list = []
+    def play(self, num_players):
+        self.player_list = {}
+        #can get rid of ids, since dict keys have them already?
         player_ids = []
 
         # Create players, player_id starts at 1 
         for number in range(num_players):
             player = Player(number)
-            self.player_list.append(player) 
+            self.player_list[number] = player
             player_ids.append(number)
         
         # Decide who goes first
@@ -62,7 +67,14 @@ class Game:
     Given a player and roll_num, distribute resources according to what tiles the player owns
     """
     def distribute_resources(self, player_id, roll_num):
-        
+       player = self.player_list[player_id]
+       rolls = player.backpack.rolls
+       if roll_num in rolls:
+           tiles = rolls[roll_num] #set of tile ids
+           for tile in tiles:
+               resource = self.tiles[tile].resource_type 
+               quantity = player.backpack.tiles[tile]
+
 
     """
     Take in a player_id and attempt to build a road at an edge tuple (x, y)
@@ -195,7 +207,7 @@ def _starter(player_ids):
         for player in player_ids:
             r = roll_dice()
             player_rolls[player] = r
-            highest_roll = r if r > highest_roll else highest roll
+            highest_roll = r if r > highest_roll else highest_roll
         player_ids = [k for k, v in player_rolls.items() if v == highest_roll]
         highest_roll = 0
         player_rolls.clear()

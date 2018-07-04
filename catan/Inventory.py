@@ -39,8 +39,8 @@ class Backpack(Inventory):
         self.ports = ports
 
     def __str__(self):
-        return "settlements: %s, cities: %s, roads: %s, victory points: %s, tiles: %s, roads: %s, ports: %s" % \
-                (self.num_settlements, self.num_cities, self.num_roads, self.victory_points, self.tiles, \
+        return "resource cards: %s, dev_cards: %s, settlements: %s, cities: %s, roads: %s, victory points: %s, tiles: %s, roads: %s, ports: %s" % \
+                (self.resource_cards, self.dev_cards, self.num_settlements, self.num_cities, self.num_roads, self.victory_points, self.tiles, \
                  self.roads, self.ports)
 
     def __repr__(self):
