@@ -13,6 +13,14 @@ class Intersection:
         self.has_settlement = False
         self.has_city = False
 
+    def __str__(self):
+        return "Intersection id: %s, port: %s, has settlement: %s, has city: %s" \
+               % (self.intersect_ID, self.port, self.has_settlement, self.has_city)
+
+    def __repr__(self):
+        return str(self)
+
+
     # def build_settlement(self, intersect_id):
     #     if intersect_id not in Game.unbuildable:
     #         Game.unbuildable.add(intersect_id)

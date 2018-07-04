@@ -20,6 +20,12 @@ class Edge:
     def check_longest_road(self):
         return self.has_road
 
+    def __str__(self):
+        return "Edge id: %s, has road: %s" % (self.edge_ID, self.has_road)
+
+    def __repr__(self):
+        return str(self)
+
 
 if __name__ == '__main__':
     test_edge = Edge(50, 20)
