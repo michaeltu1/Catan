@@ -23,7 +23,7 @@ class Backpack(Inventory):
     """
     Each Player has a backpack that keeps track of all the player's possessions;
         better way to combine rolls and tiles into one?
-    Rolls dictionary maps dice_roll to set of tiles 
+    Rolls dictionary maps dice_roll to set of tile_ids 
     Tile dictionary maps tile_id to number of resource collected
     roads should be a set of edge tuples
     """
