@@ -108,7 +108,7 @@ class Board:
 
         # Design all land tile configurations except for the desert tile
         for i in range(18):
-            tile_configs.append([tile_ids[i], self.collectible_resource_types[i], [self.roll_nums[i]]])
+            tile_configs.append([tile_ids[i], self.collectible_resource_types[i], self.roll_nums[i]])
 
         # Design desert tile configuration
         tile_configs.append([tile_ids[-1], "Desert", 0, True])
