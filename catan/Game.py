@@ -158,8 +158,8 @@ class Game:
                     self.game_resources.resource_cards["Sheep"] += 1
 
                     for tile in intersection:
-                        # Check if tile is a land tile and not desert
-                        if tile in self.tiles and self.tiles[tile].resource_type != "Desert":
+                        # Check if tile is not a desert
+                        if self.tiles[tile].resource_type != "Desert":
                             t_obj = self.tiles[tile]
                             # Add roll_num to player rolls dictionary
                             if t_obj.roll_num not in player_bp.rolls:
@@ -174,6 +174,7 @@ class Game:
                         player_bp.ports.add(int_obj.port)
 
                     player_bp.num_settlements -= 1
+                    player_bp.settlements.add(intersection)
                     player_bp.victory_points += 1
                     return True
                 else:
@@ -190,11 +191,36 @@ class Game:
     """
 
     def build_city(self, player_id, intersection):
-        if intersection.has_settlement:
+        player_bp = self.player_list[player_id].backpack
+        if intersection in player_bp.settlements:
+            if self.intersections[intersection].has_settlement:
+                if "Ore" in player_bp.resource_cards and player_bp.resource_cards["Ore"] > 2 and \
+                        "Wheat" in player_bp.resource_cards and player_bp.resource_cards["Wheat"] > 1:
+                    # Convert settlement to city
+                    self.intersections[intersection].has_settlement = False
+                    self.intersections[intersection].has_city = True
+                    player_bp.resource_cards["Ore"] -= 3
+                    player_bp.resource_cards["Wheat"] -= 2
+                    self.game_resources.resource_cards["Ore"] += 3
+                    self.game_resources.resource_cards["Wheat"] += 2
+
+                    # Update player Tiles
+                    for tile in intersection:
+                        if self.tiles[tile].resource_type != "Desert":
+                            t_obj = self.tiles[tile]
+                            player_bp.tiles[t_obj.tile_id] += 1
+                    player_bp.num_settlements += 1
+                    player_bp.num_cities -= 1
+                    player_bp.victory_points += 1
+                    return True
+                else:
+                    print("You don't have the required resource of 3 Ores and 2 Wheat")
+            else:
+                print("You already have a city here")
+        else:
+            print("You don't own a settlement here")
             intersection.has_settlement = False
             intersection.has_city = True
-            # Todo: consume resources, decrement number of buildable cities by 1
-            return True
         return False
 
     """
@@ -300,6 +326,10 @@ if __name__ == "__main__":
     g.player_list[0] = p
     p.backpack.resource_cards["Wood"] = 1
     p.backpack.resource_cards["Clay"] = 2
-    p.backpack.resource_cards["Wheat"] = 3
+    p.backpack.resource_cards["Wheat"] = 5
     p.backpack.resource_cards["Sheep"] = 4
+    p.backpack.resource_cards["Ore"] = 3
     g.build_settlement(0, (-11, -2, 0))
+    g.build_city(0, (-11, -2, 0))
+    print(g.game_resources)
+    print(p.backpack)
