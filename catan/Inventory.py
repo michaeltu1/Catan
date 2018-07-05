@@ -28,7 +28,7 @@ class Backpack(Inventory):
     roads should be a set of edge tuples
     """
     def __init__(self, num_settlements, num_cities, num_roads, victory_points=0,
-                 rolls=None, tiles=None, roads=set(), ports=set()):
+                 rolls=None, tiles=None, roads=None, ports=None):
         Inventory.__init__(self)
         self.num_settlements = num_settlements
         self.num_cities = num_cities
@@ -36,8 +36,8 @@ class Backpack(Inventory):
         self.victory_points = victory_points
         self.rolls = rolls or {}
         self.tiles = tiles or {}
-        self.roads = roads
-        self.ports = ports
+        self.roads = roads or set()
+        self.ports = ports or set()
 
     def __str__(self):
         return "resource cards: %s, dev_cards: %s, settlements: %s, cities: %s, " \
