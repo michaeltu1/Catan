@@ -46,6 +46,7 @@ class Game:
             self.__ux(player_id, "build road")
         
         while not self.game_over:
+            # TODO: Robber when dice roll is 7
             for player_id in range(player_first, player_first + num_players):
                 r = self.roll_dice()
                 self.distribute_resources(player_id, r)
@@ -66,13 +67,12 @@ class Game:
         return np.random.choice(np.arange(13), p=self.board.distribution)
 
     """
-    TODO: Fix why all the players are getting resources
     Given a player and roll_num, distribute resources according to what tiles the player owns
     """
     def distribute_resources(self, player_id, roll_num):
         player = self.player_list[player_id]
         rolls = player.backpack.rolls
-        if roll_num in rolls.keys():
+        if roll_num in rolls:
             tiles = rolls[roll_num]  # set of tile ids
             for tile in tiles:
                 resource = self.tiles[tile].resource_type 
@@ -83,7 +83,7 @@ class Game:
                 elif remaining < quantity:
                     print("There's only %s %s left" % (quantity, resource))
                 self.game_resources.resource_cards[resource] -= min(quantity, remaining)
-                if resource not in player.backpack.resource_cards.keys():
+                if resource not in player.backpack.resource_cards:
                     player.backpack.resource_cards[resource] = 0
                 player.backpack.resource_cards[resource] += min(quantity, remaining)
 
@@ -96,16 +96,18 @@ class Game:
     """
     def build_road(self, player_id, edge):
         # Edge needs to exist and not have a road, and player needs to have the resource to build the road
-        player = self.player_list[player_id]
+        player_bp = self.player_list[player_id].backpack
         if edge in self.edges and not self.edges[edge].has_road:
-            if "Wood" in player.backpack.resource_cards.keys() and player.backpack.resource_cards["Wood"] > 0 and \
-                    "Clay" in player.backpack.resource_cards.keys() and player.backpack.resource_cards["Clay"] > 0:
-                if player.backpack.num_roads > 0:
+            if "Wood" in player_bp.resource_cards and player_bp.resource_cards["Wood"] > 0 and \
+                    "Clay" in player_bp.resource_cards and player_bp.resource_cards["Clay"] > 0:
+                if player_bp.num_roads > 0:
                     self.edges[edge].has_road = True
-                    player.backpack.resource_cards["Wood"] -= 1
-                    player.backpack.resource_cards["Clay"] -= 1
-                    player.backpack.num_roads -= 1
-                    player.backpack.roads.add(edge)
+                    player_bp.resource_cards["Wood"] -= 1
+                    player_bp.resource_cards["Clay"] -= 1
+                    self.game_resources.resource_cards["Wood"] += 1
+                    self.game_resources.resource_cards["Clay"] += 1
+                    player_bp.num_roads -= 1
+                    player_bp.roads.add(edge)
                     return True
                 else:
                     print("You don't have any more spare roads")
@@ -120,22 +122,66 @@ class Game:
     Need to update player's backpack's num_settlements, victory_points, rolls, tiles, and ports if applicable
     returns true if successful, otherwise false.
 
-    originally in intersection but moved to here
-    need to update board or game with updated intersection attributes (has_settlement or has_city)
+    # Todo: check longest road
     """
 
     def build_settlement(self, player_id, intersection):
-        if self.intersect_ID not in Game.unbuildable:
-            Game.unbuildable.add(self.intersect_ID)
-            Game.unbuildable.add(
-                (self.intersect_ID.index(0) + 20, self.intersect_ID.index(1), self.intersect_ID.index(2)))
-            Game.unbuildable.add(
-                (self.intersect_ID.index(0), self.intersect_ID.index(1) - 7, self.intersect_ID.index(2)))
-            Game.unbuildable.add(
-                (self.intersect_ID.index(0), self.intersect_ID.index(1), self.intersect_ID.index(2) - 13))
-            intersection.has_settlement = True
-            # Todo: consume resources, decrement number of buildable settlements by 1, check longest road
-            return True
+
+        player_bp = self.player_list[player_id].backpack
+        if intersection in self.intersections and intersection not in self.unbuildable:
+            int_obj = self.intersections[intersection]
+            if "Wood" in player_bp.resource_cards and player_bp.resource_cards["Wood"] > 0 and \
+                    "Clay" in player_bp.resource_cards and player_bp.resource_cards["Clay"] > 0 and \
+                    "Wheat" in player_bp.resource_cards and player_bp.resource_cards["Wheat"] > 0 and \
+                    "Sheep" in player_bp.resource_cards and player_bp.resource_cards["Sheep"] > 0:
+                if player_bp.num_settlements > 0:
+                    # Add intersections that cannot be built anymore
+                    self.unbuildable.add(intersection)
+                    if (int_obj.intersect_ID[0] + int_obj.intersect_ID[1]) % 2 != 0:
+                        self.unbuildable.add((int_obj.intersect_ID[0], int_obj.intersect_ID[1] - 7, int_obj.intersect_ID[2]))
+                        self.unbuildable.add((int_obj.intersect_ID[0] - 2, int_obj.intersect_ID[0], int_obj.intersect_ID[1]))
+                        self.unbuildable.add((int_obj.intersect_ID[1], int_obj.intersect_ID[2], int_obj.intersect_ID[2] + 9))
+                    else:
+                        self.unbuildable.add((int_obj.intersect_ID[1], int_obj.intersect_ID[2], int_obj.intersect_ID[2] + 2))
+                        self.unbuildable.add((int_obj.intersect_ID[0] - 9, int_obj.intersect_ID[0], int_obj.intersect_ID[1]))
+                        self.unbuildable.add((int_obj.intersect_ID[0], int_obj.intersect_ID[1] + 7, int_obj.intersect_ID[2]))
+                    int_obj.has_settlement = True
+
+                    # Take player's resources and add them to game resources
+                    player_bp.resource_cards["Wood"] -= 1
+                    player_bp.resource_cards["Clay"] -= 1
+                    player_bp.resource_cards["Wheat"] -= 1
+                    player_bp.resource_cards["Sheep"] -= 1
+                    self.game_resources.resource_cards["Wood"] += 1
+                    self.game_resources.resource_cards["Clay"] += 1
+                    self.game_resources.resource_cards["Wheat"] += 1
+                    self.game_resources.resource_cards["Sheep"] += 1
+
+                    for tile in intersection:
+                        # Check if tile is a land tile and not desert
+                        if tile in self.tiles and self.tiles[tile].resource_type != "Desert":
+                            t_obj = self.tiles[tile]
+                            # Add roll_num to player rolls dictionary
+                            if t_obj.roll_num not in player_bp.rolls:
+                                player_bp.rolls[t_obj.roll_num] = set()
+                            player_bp.rolls[t_obj.roll_num].add(t_obj.tile_id)
+                            # Add tile to player tile dictionary
+                            if t_obj.tile_id not in player_bp.tiles:
+                                player_bp.tiles[t_obj.tile_id] = 0
+                            player_bp.tiles[t_obj.tile_id] += 1
+                    # Add port if it exists
+                    if int_obj.port is not None:
+                        player_bp.ports.add(int_obj.port)
+
+                    player_bp.num_settlements -= 1
+                    player_bp.victory_points += 1
+                    return True
+                else:
+                    print("You don't have any spare settlements")
+            else:
+                print("You don't have the required resource of 1 Wood, Clay, Wheat and Sheep")
+        else:
+            print("That's not a valid spot for a new settlement")
         return False
 
     """
@@ -178,6 +224,7 @@ class Game:
         return True
 
     """
+    TODO: Cancel operation
     Takes care of user experience; given a player and action
     perform the given action, returns True if done otherwise False or an action
     """
@@ -247,3 +294,12 @@ class Game:
             player_rolls.clear()
         return player_ids[0]
 
+if __name__ == "__main__":
+    g = Game()
+    p = Player(0)
+    g.player_list[0] = p
+    p.backpack.resource_cards["Wood"] = 1
+    p.backpack.resource_cards["Clay"] = 2
+    p.backpack.resource_cards["Wheat"] = 3
+    p.backpack.resource_cards["Sheep"] = 4
+    g.build_settlement(0, (-11, -2, 0))
