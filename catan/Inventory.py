@@ -42,7 +42,7 @@ class Backpack(Inventory):
 
     def __str__(self):
         return "resource cards: %s, dev_cards: %s, settlements: %s, cities: %s, roads: %s, " \
-               "victory points: %s, rolls: %s, tiles: %s, roads: %s, settlements: %s, ports: %s" % \
+               "victory points: %s, rolls: %s, tiles: %s, settlements: %s, roads: %s, ports: %s" % \
                 (self.resource_cards, self.dev_cards, self.num_settlements, self.num_cities, self.num_roads,
                  self.victory_points, self.rolls, self.tiles, self.settlements, self.roads, self.ports)
 
