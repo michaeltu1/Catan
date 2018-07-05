@@ -6,15 +6,16 @@ from catan.Board import Board
 
 class Game:
     def __init__(self):
-        self.intersections = None
         self.unbuildable = set()
-        
+
         resource_cards = {"Wheat": 19, "Sheep": 19, "Ore": 19, "Clay": 19, "Wood": 19}
         dev_cards = {"Knight": 14, "Victory Point": 5, "Road Building": 2, "Year of Plenty": 2, "Monopoly": 2}
 
         self.game_resources = Inventory(resource_cards, dev_cards)
         self.board = Board()
         self.tiles = self.board.land_tiles
+        self.edges = self.board.edges
+        self.intersections = self.board.intersections
         self.player_list = {}
         self.game_over = False
 
@@ -90,11 +91,28 @@ class Game:
     Take in a player_id and attempt to build a road at an edge tuple (x, y)
     Need to update player's backpack's num_roads, roads
     returns true if successful, otherwise false.
+    
+    Todo: check longest road
     """
     def build_road(self, player_id, edge):
-        if edge.has_road is False:
-            edge.has_road = True
-            # Todo: consume resources, decrement number of buildable roads by 1, check longest road
+        # Edge needs to exist and not have a road, and player needs to have the resource to build the road
+        player = self.player_list[player_id]
+        if edge in self.edges and not self.edges[edge].has_road:
+            if "Wood" in player.backpack.resource_cards.keys() and player.backpack.resource_cards["Wood"] > 0 and \
+                    "Clay" in player.backpack.resource_cards.keys() and player.backpack.resource_cards["Clay"] > 0:
+                if player.backpack.num_roads > 0:
+                    self.edges[edge].has_road = True
+                    player.backpack.resource_cards["Wood"] -= 1
+                    player.backpack.resource_cards["Clay"] -= 1
+                    player.backpack.num_roads -= 1
+                    player.backpack.roads.add(edge)
+                    return True
+                else:
+                    print("You don't have any more spare roads")
+            else:
+                print("You don't have the required resource of 1 Wood and 1 Clay")
+        else:
+            print("That's not a valid spot for a road or the spot already has a road on it")
         return False
 
     """
