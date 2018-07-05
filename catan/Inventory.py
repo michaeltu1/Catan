@@ -28,7 +28,7 @@ class Backpack(Inventory):
     roads should be a set of edge tuples
     """
     def __init__(self, num_settlements, num_cities, num_roads, victory_points=0,
-                 rolls=None, tiles=None, roads=None, ports=None):
+                 rolls=None, tiles=None, settlements=None, roads=None, ports=None):
         Inventory.__init__(self)
         self.num_settlements = num_settlements
         self.num_cities = num_cities
@@ -36,18 +36,19 @@ class Backpack(Inventory):
         self.victory_points = victory_points
         self.rolls = rolls or {}
         self.tiles = tiles or {}
+        self.settlements = settlements or set()
         self.roads = roads or set()
         self.ports = ports or set()
 
     def __str__(self):
-        return "resource cards: %s, dev_cards: %s, settlements: %s, cities: %s, " \
-               "roads: %s, victory points: %s, rolls: %s, tiles: %s, roads: %s, ports: %s" % \
-                (self.resource_cards, self.dev_cards, self.num_settlements, self.num_cities,
-                 self.num_roads, self.victory_points, self.rolls, self.tiles, self.roads, self.ports)
+        return "resource cards: %s, dev_cards: %s, settlements: %s, cities: %s, roads: %s, " \
+               "victory points: %s, rolls: %s, tiles: %s, roads: %s, settlements: %s, ports: %s" % \
+                (self.resource_cards, self.dev_cards, self.num_settlements, self.num_cities, self.num_roads,
+                 self.victory_points, self.rolls, self.tiles, self.settlements, self.roads, self.ports)
 
     def __repr__(self):
-        return "Backpack(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % \
-                (self.resource_cards, self.dev_cards, self.num_settlements, self.num_cities,
-                 self.num_roads, self.victory_points, self.rolls, self.tiles, self.roads, self.ports)
+        return "Backpack(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % \
+                (self.resource_cards, self.dev_cards, self.num_settlements, self.num_cities, self.num_roads,
+                 self.victory_points, self.rolls, self.tiles, self.settlements, self.roads, self.ports)
 
 # ex_backpack = Backpack(5, 4, 15)
