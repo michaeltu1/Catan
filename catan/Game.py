@@ -300,9 +300,6 @@ class Game:
                 response = input("")
         return False
 
-# b = game.player_list[0].backpack
-# print(b), can't print out actual information for some reason
-
     """
     Decides which player goes first
     returns the player_id that wins
@@ -319,6 +316,7 @@ class Game:
             highest_roll = 0
             player_rolls.clear()
         return player_ids[0]
+
 
 if __name__ == "__main__":
     g = Game()
