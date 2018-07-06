@@ -9,11 +9,14 @@ class Edge:
         self.edge_ID = (tile_1, tile_2)
         self.has_road = False
 
-    def build_road(self, edge_id):
-        if "???".has_road is False:
-            # TODO: somehow reach edge object from intersect ID
-            "???".has_road = True
-            # check longest road
+    """
+    Return whether or not another is edge is adjacent to this one 
+    """
+    def adjacent_edge(self, other):
+        sum1 = self.edge_ID[0] + self.edge_ID[1]
+        sum2 = other.edge_ID[0] + other.edge_ID[1]
+        result = abs(sum2 - sum1)
+        return result == 2 or result == 9 or result == 11
 
     # TODO: Implement BFS in Python to determine longest road when road/settlement is placed.
 
