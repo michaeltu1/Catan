@@ -25,6 +25,7 @@ class Game:
         self.edges = self.board.edges
         self.intersections = self.board.intersections
         self.player_list = {}
+        self.robber = self.find_robber()
         self.largest_army = None
         self.game_over = False
 
@@ -41,7 +42,11 @@ class Game:
 
         # Decide who goes first
         player_first = self.__starter(self.player_list.keys())
-        
+
+        print(self.board)
+        print(self.tiles)
+        print(self.edges)
+        print(self.board.intersections)
         # First round of choosing settlements and roads
         for player_id in range(player_first, player_first + num_players):
             player_id %= num_players
@@ -60,11 +65,14 @@ class Game:
             self.__ux(player_id, "build road")
         
         while not self.game_over:
-            # TODO: Robber when dice roll is 7
             for player_id in range(player_first, player_first + num_players):
                 r = self.roll_dice()
-                for pid in range(player_first, player_first + num_players):
-                    self.distribute_resources(pid, r)
+                if r == 7:
+                    self.return_resources()
+                    self.move_robber(player_id)
+                else:
+                    for pid in range(player_first, player_first + num_players):
+                        self.distribute_resources(pid, r)
                 # Keeps track of dev card ids the player has bought to activate them at the end of the turn
                 dev_card_list = []
 
@@ -90,7 +98,27 @@ class Game:
     def roll_dice(self):
         return np.random.choice(np.arange(13), p=self.board.distribution)
 
+    """
+    Find the tile the robber is located on
+    """
+    def find_robber(self):
+        for tile in self.tiles.values():
+            if tile.has_robber:
+                return tile.tile_id
+
     def move_robber(self, player_id):
+        self.__ux(player_id, "move robber")
+
+    """
+    Steal a random card from another player's hand
+    """
+    def steal(self, player_id, other_player):
+        other_resources = self.player_list[other_player].backpack.resource_cards
+        total = np.sum(list(other_resources.values()))
+        # Choose randomly from other player's cards
+        resource = list(other_resources)[np.random.choice(np.arange(5), p=list(other_resources.values()) / total)]
+        other_resources[resource] -= 1
+        self.player_list[player_id].backpack.resource_cards[resource] += 1
 
 
     """
@@ -102,15 +130,27 @@ class Game:
         if roll_num in rolls:
             tiles = rolls[roll_num]  # set of tile ids
             for tile in tiles:
-                resource = self.tiles[tile].resource_type 
-                quantity = player.backpack.tiles[tile]
-                remaining = self.game_resources.resource_cards[resource]
-                if remaining == 0:
-                    print("No more %s left" % resource)
-                elif remaining < quantity:
-                    print("There's only %s %s left" % (quantity, resource))
-                self.game_resources.resource_cards[resource] -= min(quantity, remaining)
-                player.backpack.resource_cards[resource] += min(quantity, remaining)
+                if not tile.has_robber:
+                    resource = self.tiles[tile].resource_type
+                    quantity = player.backpack.tiles[tile]
+                    remaining = self.game_resources.resource_cards[resource]
+                    if remaining == 0:
+                        print("No more %s left" % resource)
+                    elif remaining < quantity:
+                        print("There's only %s %s left" % (quantity, resource))
+                    self.game_resources.resource_cards[resource] -= min(quantity, remaining)
+                    player.backpack.resource_cards[resource] += min(quantity, remaining)
+                    player.backpack.num_cards += min(quantity, remaining)
+
+    """
+    Every player that has more than 7 cards, must return half (rounded down) of their cards to the bank
+    """
+    def return_resources(self):
+        for player_id in self.player_list:
+            player_bp = self.player_list[player_id].backpack
+            if player_bp.num_cards > 7:
+                self.__ux(player_id, "return resources")
+
 
     """
     Take in a player_id and attempt to build a road at an edge tuple (x, y)
@@ -131,6 +171,7 @@ class Game:
                         player_bp.resource_cards["Clay"] -= 1
                         self.game_resources.resource_cards["Wood"] += 1
                         self.game_resources.resource_cards["Clay"] += 1
+                    player_bp.num_cards -= 2
                     player_bp.num_roads -= 1
                     player_bp.roads.add(edge)
                     return True
@@ -165,7 +206,11 @@ class Game:
     """
 
     def build_settlement(self, player_id, intersection):
-
+        print(intersection)
+        print(self.intersections.keys())
+        print(intersection in self.intersections)
+        print(self.unbuildable)
+        print(intersection not in self.unbuildable)
         player_bp = self.player_list[player_id].backpack
         if intersection in self.intersections and intersection not in self.unbuildable:
             int_obj = self.intersections[intersection]
@@ -210,6 +255,7 @@ class Game:
                     if int_obj.port is not None:
                         player_bp.ports.add(int_obj.port)
 
+                    player_bp.num_cards -= 4
                     player_bp.num_settlements -= 1
                     player_bp.settlements.add(intersection)
                     player_bp.victory_points += 1
@@ -245,6 +291,7 @@ class Game:
                         if self.tiles[tile].resource_type != "Desert":
                             t_obj = self.tiles[tile]
                             player_bp.tiles[t_obj.tile_id] += 1
+                    player_bp.num_cards -= 5
                     player_bp.num_settlements += 1
                     player_bp.num_cities -= 1
                     player_bp.victory_points += 1
@@ -284,6 +331,7 @@ class Game:
                 if card_obj.card_type == "Victory Point":
                     card_obj.can_use = True
 
+                player_bp.num_cards -= 3
                 player_bp.dev_cards.append(card_obj)
                 self.game_dev_cards[card_obj.card_type] -= 1
                 return len(player_bp.dev_cards) - 1
@@ -365,7 +413,6 @@ class Game:
             if player_bp.dev_cards[index].card_type == card and player_bp.dev_cards[index].can_use:
                 return index
 
-
     """
     TODO: Cancel operation
     Takes care of user experience; given a player and action
@@ -389,7 +436,7 @@ class Game:
         elif action.split(" ")[0] == "build":
             obj = action.split(" ")[1]
             build_location = input("Player %s, where would you like to build your %s ?" % (player_id, obj))
-            if obj == "settlement":            
+            if obj == "settlement":
                 while not self.build_settlement(player_id, build_location):
                     build_location = input("Sorry, you cannot build there, please choose another location: ")
             elif obj == "city":
@@ -435,6 +482,7 @@ class Game:
             player_resources = self.player_list[player_id].backpack.resource_cards
             player_resources[r_1] += 1
             player_resources[r_2] += 1
+            self.player_list[player_id].backpack.num_cards += 2
             self.game_resources.resource_cards[r_1] -= 1
             self.game_resources.resource_cards[r_2] -= 1
 
@@ -447,9 +495,40 @@ class Game:
             for player in self.player_list:
                 player_resources = self.player_list[player].backpack.resource_cards
                 if player != player_id:
-                    self.player_list[player_id].backpack.resource_cards[resource] += player_resources[resource]
+                    amount = player_resources[resource]
+                    self.player_list[player_id].backpack.num_cards += amount
+                    self.player_list[player_id].backpack.resource_cards[resource] += amount
                     player_resources[resource] = 0
 
+        elif action == "move robber":
+            move_location = input("Where would you like to move the robber? ")
+            while move_location not in self.tiles:
+                move_location = input("That's not a valid tile id")
+            self.robber = move_location
+            steal_lst = []
+            for player in self.player_list:
+                for settlement in self.player_list[player].backpack.settlements:
+                    if move_location in settlement:
+                        steal_lst += [player]
+            player = input("You can steal from player(s): %s" % steal_lst)
+            while player not in steal_lst:
+                player = input("That's not one of the options, try again")
+            self.steal(player_id, player)
+
+        elif action == "return resources":
+            player_bp = self.player_list[player_id].backpack
+            leftover_amount = player_bp.num_cards - player_bp.num_cards // 2
+            while player_bp.num_cards > leftover_amount:
+                resource = input("You need to get rid of %s resources, what resource are you getting rid of? "
+                                 % player_bp.num_cards - leftover_amount)
+                while resource.lower() not in resources:
+                    resource = input("That's not a valid resource, try again: ")
+                if player_bp.resource_cards[resource] > 0:
+                    player_bp.num_cards -= 1
+                    player_bp.resource_cards[resource] -= 1
+                    self.game_resources.resource_cards[resource] += 1
+                else:
+                    print("You don't have anymore of those")
 
         elif action == "trade":  # TODO
             response = input("What type of trade would you like to do? ")
@@ -486,16 +565,29 @@ class Game:
 if __name__ == "__main__":
     g = Game()
     # g.play(4)
+
     p = Player(0)
+    p1 = Player(1)
     g.player_list[0] = p
-    p.backpack.resource_cards["Wood"] = 1
-    p.backpack.resource_cards["Clay"] = 2
-    p.backpack.resource_cards["Wheat"] = 5
-    p.backpack.resource_cards["Sheep"] = 4
-    p.backpack.resource_cards["Ore"] = 3
-    g.buy_dev_card(0)
-    # g.build_settlement(0, (-11, -2, 0))
+    g.player_list[1] = p1
+
+    p.backpack.resource_cards["Wood"] = 0
+    p.backpack.resource_cards["Clay"] = 0
+    p.backpack.resource_cards["Wheat"] = 0
+    p.backpack.resource_cards["Sheep"] = 0
+    p.backpack.resource_cards["Ore"] = 0
+    p1.backpack.resource_cards["Wood"] = 1
+    p1.backpack.resource_cards["Clay"] = 2
+    p1.backpack.resource_cards["Wheat"] = 5
+    p1.backpack.resource_cards["Sheep"] = 4
+    p1.backpack.resource_cards["Ore"] = 3
+    # g.steal(0, 1)
+    # g.buy_dev_card(0)
+    # g.ux(1, "build settlement")
+    # g.build_settlement(1, (-11, -2, 0))
     # g.build_city(0, (-11, -2, 0))
     
     print(g.game_resources)
-    print(p.backpack)
+    print("P0: %s " % p.backpack)
+    print("P1: %s" % p1.backpack)
+
