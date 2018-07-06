@@ -8,7 +8,8 @@ class Game:
     def __init__(self):
         self.unbuildable = set()
 
-        resource_cards = {"Wheat": 19, "Sheep": 19, "Ore": 19, "Clay": 19, "Wood": 19}
+        resource_cards = {"Wood": 19, "Clay": 19, "Wheat": 19, "Sheep": 19, "Ore": 19}
+        # TODO: add descriptions to dev cards
         dev_cards = {"Knight": 14, "Victory Point": 5, "Road Building": 2, "Year of Plenty": 2, "Monopoly": 2}
 
         self.game_resources = Inventory(resource_cards, dev_cards)
@@ -55,7 +56,8 @@ class Game:
                 while not done:
                     action = self.__ux(player_id, "ask for action")
                     done = self.__ux(player_id, action)
-
+                    if done
+                self.player_list[player_id].backpack.dev_cards
                 if self.player_list[player_id].backpack.victory_points == 10:
                     self.game_over = True
                     print("Player %s has won the game" % player_id)
@@ -225,9 +227,46 @@ class Game:
 
     """
     Take in a player_id and attempt to buy a dev card
-    returns true if successful and will add the dev card to player's backpack, otherwise returns false
+    returns the dev_card the player got if successful 
+    and will add the dev card to player's backpack, otherwise returns false
     """
     def buy_dev_card(self, player_id):
+        player_bp = self.player_list[player_id].backpack
+        if "Ore" in player_bp.resource_cards and player_bp.resource_cards["Ore"] > 0 and \
+                "Sheep" in player_bp.resource_cards and player_bp.resource_cards["Sheep"] > 0 and \
+                "Wheat" in player_bp.resource_cards and player_bp.resource_cards["Wheat"] > 0:
+            # Pick a random dev card from the game resource
+            dev = np.array(list(self.game_resources.dev_cards.values()))
+            total = np.sum(dev)
+            if total > 0:
+                player_bp.resource_cards["Ore"] -= 1
+                player_bp.resource_cards["Sheep"] -= 1
+                player_bp.resource_cards["Wheat"] -= 1
+                self.game_resources.resource_cards["Ore"] += 1
+                self.game_resources.resource_cards["Sheep"] += 1
+                self.game_resources.resource_cards["Wheat"] += 1
+
+                card_id = np.random.choice(np.arange(5), p=dev/total)
+                card = ""
+                if card_id == 0:
+                    card = "Knight"
+                elif card_id == 1:
+                    card = "Victory Point"
+                elif card_id == 2:
+                    card = "Road Building"
+                elif card_id == 3:
+                    card = "Year of Plenty"
+                elif card_id == 4:
+                    card = "Monopoly"
+                if card not in player_bp.dev_cards:
+                    player_bp.dev_cards[card] = [0, False]
+                player_bp.dev_cards[card][0] += 1
+                self.game_resources.dev_cards[card] -= 1
+                return card
+            else:
+                print("There are no more dev cards to buy")
+        else:
+            print("You don't have the required resource of 1 Ore, Sheep, and Wheat")
         return False
 
     """
@@ -236,7 +275,9 @@ class Game:
     returns true if used successfully, otherwise returns false
     """
 
-    def use_dev_card(self, player_id):
+    def use_dev_card(self, player_id, card):
+        player_bp = self.player_list[player_id].backpack
+        player_bp.dev_cards
         return False
 
     """
@@ -281,7 +322,7 @@ class Game:
                     build_location = input("Sorry, you cannot build there, please choose another location: ")
 
         elif action == "buy dev card":
-            self.buy_dev_card(player_id)
+            return self.buy_dev_card(player_id)
 
         elif action == "use dev card":
             self.use_dev_card(player_id)
@@ -320,6 +361,7 @@ class Game:
 
 if __name__ == "__main__":
     g = Game()
+    # g.play(4)
     p = Player(0)
     g.player_list[0] = p
     p.backpack.resource_cards["Wood"] = 1
@@ -327,7 +369,9 @@ if __name__ == "__main__":
     p.backpack.resource_cards["Wheat"] = 5
     p.backpack.resource_cards["Sheep"] = 4
     p.backpack.resource_cards["Ore"] = 3
-    g.build_settlement(0, (-11, -2, 0))
-    g.build_city(0, (-11, -2, 0))
+    g.buy_dev_card(0)
+    # g.build_settlement(0, (-11, -2, 0))
+    # g.build_city(0, (-11, -2, 0))
+    
     print(g.game_resources)
     print(p.backpack)
