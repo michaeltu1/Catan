@@ -1,19 +1,19 @@
 class Inventory:
     """
     Game.py should initialize the dictionary of resource and dev cards
-    should map resource type (key) to number of that type of card (value), 
+    should map resource type (key) to number of that type of card (value),
+    a player's dev_card will map "type" to DevCard Class
     also initialize ports
 
-    Move longest road /largest_army to game.py and have it keep track of player id
     a player by default has no cards and no ports
 
     """
     def __init__(self, resource_cards=None, dev_cards=None):
         self.resource_cards = resource_cards or {}
-        self.dev_cards = dev_cards or {}
+        self.dev_cards = dev_cards or []
 
     def __str__(self):
-        return "resource cards: %s, dev cards %s" % (self.resource_cards, self.dev_cards)
+        return "Resource cards: %s, Dev cards: %s" % (self.resource_cards, self.dev_cards)
 
     def __repr__(self):
         return "Inventory(%s, %s)" % (self.resource_cards, self.dev_cards)
