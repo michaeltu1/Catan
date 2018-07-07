@@ -122,7 +122,7 @@ class Game:
         resource = list(other_resources)[np.random.choice(np.arange(5), p=list(other_resources.values()) / total)]
         other_resources[resource] -= 1
         self.player_list[player_id].backpack.resource_cards[resource] += 1
-
+        print("Player {} got {} from player {}".format(player_id, resource, other_player))
 
     """
     Given a player and roll_num, distribute resources according to what tiles the player owns
@@ -391,6 +391,17 @@ class Game:
         return False
 
     """
+    Returns the index in the player's dev_card list that corresponds to a usable dev card,
+    Returns None if cannot find one
+    """
+    def __find_usable_dev_card(self, player_id, card):
+        player_bp = self.player_list[player_id].backpack
+        for index in range(len(player_bp.dev_cards)):
+            if (card == "victory point" or player_bp.dev_cards[index].turn_bought !=
+                    self.player_list[player_id].turn_number) and player_bp.dev_cards[index].card_type.lower() == card:
+                return index
+
+    """
     Check who has the largest army currently and update victory points and titles accordingly
     """
     def check_largest_army(self, player_id):
@@ -405,28 +416,6 @@ class Game:
                 self.largest_army = player_id
 
     """
-    Take in a player_id and two resource types;
-    By default it's a 4:1 trade from resource_1 -> resource_2
-    if other_player_id is positive then attempt to trade with other player
-    else if port_name is not None: do a trade according to the port type and resource_1 and resource_2
-    returns True if trade was successful, otherwise prints out what went wrong and returns false.
-    """
-    def trade(self, player_id, resource_1, resource_2, other_player_id=-1, port_name=None):
-        return True
-
-    """
-    Returns the index in the player's dev_card list that corresponds to a usable dev card,
-    Returns None if cannot find one
-    """
-    def __find_usable_dev_card(self, player_id, card):
-        player_bp = self.player_list[player_id].backpack
-        for index in range(len(player_bp.dev_cards)):
-            if (card == "victory point" or player_bp.dev_cards[index].turn_bought !=
-                    self.player_list[player_id].turn_number) and player_bp.dev_cards[index].card_type.lower() == card:
-                return index
-
-    """
-    TODO: Cancel operation
     Takes care of user experience; given a player and action
     perform the given action, returns True if done otherwise False or an action
     """
@@ -437,6 +426,7 @@ class Game:
         resources = ["wheat", "sheep", "ore", "clay", "wood"]
         ports = resources + ["3:1"]
         dev_cards = ["victory point", "knight", "road building", "year of plenty", "monopoly"]
+        players = list(self.player_list.keys())
 
         if action == "ask for action":
             response = input("Player %s, what would you like to do? \n" % player_id)
@@ -446,6 +436,7 @@ class Game:
 
         elif action == "done":
             return True
+
         elif action.split(" ")[0] == "build":
             obj = action.split(" ")[1]
             build_location = input("Player %s, where would you like to build your %s? \n" % (player_id, obj))
@@ -588,19 +579,90 @@ class Game:
         elif action == "check resources":
             print(self.player_list[player_id].backpack)
 
-        elif action == "trade":  # TODO
+        elif action == "trade":  # TODO check for valid trades
             response = input("What type of trade would you like to do? \n")
+            if response == "cancel":
+                return False
             while response.lower() not in trades:
                 response = input("That's not a valid trade, please choose from the following: %s \n" % trades)
+                if response == "cancel":
+                    return False
             if response == "player":
-                response = input("")
+                response = input("Which player would you like to trade with? {} \n".format(players))
+                while literal_eval(response) not in players:
+                    response = input("That's not a valid player, try again: \n")
+                    if response == "cancel":
+                        return False
+                other_player = literal_eval(response)
+                giving = {}
+                receiving = {}
+                types = literal_eval(input("How many types of resources are you giving up? \n"))
+                giving = self.trade_agreement(types)
+                types = literal_eval(input("How many types of resources are you receiving? \n"))
+                receiving = self.trade_agreement(types)
+                response = input("Player {}, player {} wants to trade {} for {}, do you agree? \n"
+                                 .format(other_player, player_id, giving, receiving))
+                if response.lower().startswith("y"):
+                    for resource in giving:
+                        amount = giving[resource]
+                        # Not checking if both players have the resources required for the trade
+                        self.player_list[player_id].backpack.resource_cards[resource] -= amount
+                        self.player_list[other_player].backpack.resource_cards[resource] += amount
+                    for resource in receiving:
+                        amount = receiving[resource]
+                        resource = resource[0].upper() + resource[1:]
+                        self.player_list[player_id].backpack.resource_cards[resource] += amount
+                        self.player_list[other_player].backpack.resource_cards[resource] -= amount
+
             elif response == "port":
                 response = input("Which port would you like to use? \n")
                 while response.lower() not in ports:
                     response = input("That's not a valid port, please choose from the following: %s \n" % ports)
+                if response == "3:1":
+                    self.single_type_trade(player_id, 3)
+                else:
+                    response = response[0].upper() + response[1:]
+                    if response not in self.player_list[player_id].backpack.ports:
+                        print("You don't own this port")
+                        return False
+                    else:
+                        self.single_type_trade(player_id, 2, response)
             elif response == "4:1":
-                response = input("")
+                self.single_type_trade(player_id, 4)
         return False
+
+    def single_type_trade(self, player_id, ratio, resource_type=None):
+        print("What are you giving up? \n")
+        giving = self.trade_agreement()
+
+        resource = list(giving.keys())[0]
+        if resource_type is not None:
+            if resource_type != resource:
+                print("You can't use this {} port to trade {} resource! \n".format(resource_type, resource))
+                return False
+        amount = giving[resource] // ratio
+        resources = self.game_resources.resource_cards.keys()
+        response = input("What do you want for it? \n")
+        response = response[0].upper() + response[1:]
+        while response not in resources:
+            response = input("That's not a valid resource \n")
+        response = response[0].upper() + response[1:]
+        accept = input("Trade {} {} for {} {} ? \n".format(amount * ratio, resource, response, amount))
+        if accept.lower().startswith("y"):
+            self.player_list[player_id].backpack.resource_cards[resource] -= amount * ratio
+            self.player_list[player_id].backpack.resource_cards[response] += amount
+
+    def trade_agreement(self, types=1):
+        trade_dict = {}
+        resources = self.game_resources.resource_cards.keys()
+        for resource in range(types):
+            resource_type = input("Resource type {}? \n".format(resources))
+            resource_type = resource_type[0].upper() + resource_type[1:]
+            while resource_type not in resources:
+                resource_type = input("That's not a valid resource \n")
+            quantity = literal_eval(input("How many? \n"))
+            trade_dict[resource_type] = quantity
+        return trade_dict
 
     """
     Decides which player goes first
