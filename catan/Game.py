@@ -1,11 +1,12 @@
 import numpy as np
+from ast import literal_eval
+from collections import defaultdict
+
+
 from catan.Player import Player
 from catan.Inventory import Inventory
 from catan.Board import Board
 from catan.DevCard import DevCard
-from catan.Intersection import  Intersection
-from ast import literal_eval
-from collections import defaultdict
 
 
 class Game:
@@ -212,12 +213,9 @@ class Game:
 
     def check_longest_road(self, player_id):
         roads = self.player_list[player_id].backpack.roads
-        settlements = self.player_list[player_id].backpack.settlements
         road_length = 0
 
-        # graph = {vertex -> set of adjacent vertices}
         graph = defaultdict(set)
-        graph2 = {i: len([e for e in i.adjacent_edges() if e in roads]) for i in settlements}
 
         for edge in roads:
             x, y = edge.get_vertices()
@@ -225,8 +223,10 @@ class Game:
             graph[y].add(x)
         # TODO: cache the graph
 
-        dfs_starting_points = [k for k in graph2.keys() if graph2[k] == 1] or \
-                              [k for k in graph2.keys() if graph2[k] == 2]
+        vertex_degrees = {v: len([e for e in v.adjacent_edges() if e in roads]) for v in graph.keys()}
+
+        dfs_starting_points = [k for k in vertex_degrees.keys() if vertex_degrees[k] == 1] or \
+                              [k for k in vertex_degrees.keys() if vertex_degrees[k] == 2]
 
         for vertex in dfs_starting_points:
             road_length = max(road_length, self.__dfs(graph, vertex))
@@ -236,6 +236,7 @@ class Game:
         # TODO:  check length >= 5 somewhere before calling this function
         if self.has_longest_road is None:
             self.has_longest_road = player_id
+            self.player_list[player_id].backpack.victory_points += 2
         else:
             current_longest = self.player_list[self.has_longest_road]
             # Check if they are not the same person?
@@ -734,7 +735,12 @@ class Game:
 if __name__ == "__main__":
 
     g = Game()
-    g.play(2)
+    # g.play(2)
+    p = Player(0)
+    p1 = Player(1)
+    g.player_list[0] = p
+    g.player_list[1] = p1
+    g.check_longest_road(0)
 """    
     import sys
     f1 = sys.stdin
