@@ -99,9 +99,8 @@ class Game:
                 # After a player has built at least 5 roads, check at the end of each turn
                 if self.player_list[player_id].backpack.num_roads <= 10:
                     self.check_longest_road(player_id)
-                # self.check_longest_road(player_id)
 
-                if self.player_list[player_id].backpack.victory_points == 10:
+                if self.player_list[player_id].backpack.victory_points >= 10:
                     self.game_over = True
                     print("Player %s has won the game \n" % player_id)
 
@@ -230,8 +229,11 @@ class Game:
 
         for vertex in dfs_starting_points:
             road_length = max(road_length, self.__dfs(graph, vertex))
+
         # Update player's road length
         self.player_list[player_id].road_length = road_length
+
+        # TODO: Update player's road length (check if settlement blocked road)
 
         # TODO:  check length >= 5 somewhere before calling this function
         if self.has_longest_road is None:
