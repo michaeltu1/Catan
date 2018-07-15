@@ -112,6 +112,7 @@ class Board:
 
         # Design desert tile configuration
         tile_configs.append([tile_ids[-1], "Desert", 0, True])
+        self.robber_tile = tile_ids[-1]
         self.land_tile_objects = [Tile(*config) for config in tile_configs]
 
         # Design all ocean tile configs

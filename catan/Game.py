@@ -3,10 +3,13 @@ from catan.Player import Player
 from catan.Inventory import Inventory
 from catan.Board import Board
 from catan.DevCard import DevCard
+from catan.Intersection import  Intersection
 from ast import literal_eval
+from collections import defaultdict
 
 
 class Game:
+    # TODO Make regex for resources or convert them to lowercase in board
     def __init__(self):
         self.unbuildable = set()
 
@@ -26,8 +29,9 @@ class Game:
         self.edges = self.board.edges
         self.intersections = self.board.intersections
         self.player_list = {}
-        self.robber = self.find_robber()
-        self.largest_army = None
+        self.robber = self.board.robber_tile
+        self.has_longest_road = None
+        self.has_largest_army = None
         self.game_over = False
 
     def play(self, num_players):
@@ -90,6 +94,11 @@ class Game:
                     done = self.__ux(player_id, action)
                 self.player_list[player_id].dev_cards_used = False
                 self.player_list[player_id].turn_number += 1
+                # optimize check
+                # After a player has built at least 5 roads, check at the end of each turn
+                if self.player_list[player_id].backpack.num_roads <= 10:
+                    self.check_longest_road(player_id)
+                # self.check_longest_road(player_id)
 
                 if self.player_list[player_id].backpack.victory_points == 10:
                     self.game_over = True
@@ -100,14 +109,6 @@ class Game:
     """
     def roll_dice(self):
         return np.random.choice(np.arange(13), p=self.board.distribution)
-
-    """
-    Find the tile the robber is located on
-    """
-    def find_robber(self):
-        for tile in self.tiles.values():
-            if tile.has_robber:
-                return tile.tile_id
 
     def move_robber(self, player_id):
         self.__ux(player_id, "move robber")
@@ -155,7 +156,7 @@ class Game:
             if player_bp.num_cards > 7:
                 self.__ux(player_id, "return resources")
 
-
+    # TODO make an arbitrary add/remove resource function
     """
     Take in a player_id and attempt to build a road at an edge tuple (x, y)
     Need to update player's backpack's num_roads, roads
@@ -208,6 +209,51 @@ class Game:
             if self.edges[edge].adjacent_edge(road):
                 return True
         return False
+
+    def check_longest_road(self, player_id):
+        roads = self.player_list[player_id].backpack.roads
+        settlements = self.player_list[player_id].backpack.settlements
+        road_length = 0
+
+        # graph = {vertex -> set of adjacent vertices}
+        graph = defaultdict(set)
+        graph2 = {i: len([e for e in i.adjacent_edges() if e in roads]) for i in settlements}
+
+        for edge in roads:
+            x, y = edge.get_vertices()
+            graph[x].add(y)
+            graph[y].add(x)
+        # TODO: cache the graph
+
+        dfs_starting_points = [k for k in graph2.keys() if graph2[k] == 1] or \
+                              [k for k in graph2.keys() if graph2[k] == 2]
+
+        for vertex in dfs_starting_points:
+            road_length = max(road_length, self.__dfs(graph, vertex))
+        # Update player's road length
+        self.player_list[player_id].road_length = road_length
+
+        # TODO:  check length >= 5 somewhere before calling this function
+        if self.has_longest_road is None:
+            self.has_longest_road = player_id
+        else:
+            current_longest = self.player_list[self.has_longest_road]
+            # Check if they are not the same person?
+            if road_length > current_longest.road_length:
+                current_longest.backpack.victory_points -= 2
+                self.player_list[player_id].backpack.victory_points += 2
+                self.has_longest_road = player_id
+
+    def __dfs(self, graph, starting_vertex, visited=None, depth=0):
+        visited = visited or [starting_vertex]
+        for vertex in graph[starting_vertex]:
+            if vertex in visited:
+                return depth
+            else:
+                d = self.__dfs(graph, starting_vertex, depth + 1, visited + [vertex])
+                depth = max(depth, d)
+        return depth
+
     """
     Take in a player_id and attempt to build a settlement at an intersection tuple (x, y, z)
     Need to update player's backpack's num_settlements, victory_points, rolls, tiles, and ports if applicable
@@ -361,6 +407,7 @@ class Game:
         if index is not None:
             if card == "victory point":
                 player.backpack.victory_points += 1
+                player.backpack.dev_cards(index)
             elif not player.dev_cards_used:
                 if card == "knight":
                     self.move_robber(player_id)
@@ -371,8 +418,10 @@ class Game:
                     player.backpack.dev_cards[index].used = True
                     return True
                 elif card == "road building":
+                    # Don't have a way of canceling after only one road is built
                     self.__ux(player_id, "build roads")
                     self.__ux(player_id, "build roads")
+                    success = True
                 elif card == "year of plenty":
                     success = self.__ux(player_id, "year of plenty")
                 elif card == "monopoly":
@@ -405,15 +454,15 @@ class Game:
     Check who has the largest army currently and update victory points and titles accordingly
     """
     def check_largest_army(self, player_id):
-        if self.largest_army is None:
+        if self.has_largest_army is None:
             self.player_list[player_id].backpack.victory_points += 2
-            self.largest_army = player_id
+            self.has_largest_army = player_id
         else:
-            current = self.player_list[self.largest_army].knights_played
+            current = self.player_list[self.has_largest_army].knights_played
             if self.player_list[player_id].knights_played > current:
-                self.player_list[self.largest_army].backpack.victory_points -= 2
+                self.player_list[self.has_largest_army].backpack.victory_points -= 2
                 self.player_list[player_id].backpack.victory_points += 2
-                self.largest_army = player_id
+                self.has_largest_army = player_id
 
     """
     Takes care of user experience; given a player and action

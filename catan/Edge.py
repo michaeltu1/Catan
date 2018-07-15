@@ -20,6 +20,20 @@ class Edge:
 
     # TODO: Implement BFS in Python to determine longest road when road/settlement is placed.
 
+    def get_vertices(self):
+        vertices = set()
+        diff = self.edge_ID[1] - self.edge_ID[0]
+        if diff == 2:
+            vertices.add((self.edge_ID[0] - 9, self.edge_ID[0], self.edge_ID[1]))
+            vertices.add((self.edge_ID[0], self.edge_ID[1], self.edge_ID[1] + 9))
+        elif diff == 9:
+            vertices.add((self.edge_ID[0], self.edge_ID[1], self.edge_ID[1] + 2))
+            vertices.add((self.edge_ID[0] - 2, self.edge_ID[0], self.edge_ID[1]))
+        elif diff == 11:
+            vertices.add((self.edge_ID[0], self.edge_ID[1] - 2, self.edge_ID[1]))
+            vertices.add((self.edge_ID[0], self.edge_ID[0] + 2, self.edge_ID[1]))
+        return vertices
+    
     def check_longest_road(self):
         return self.has_road
 
