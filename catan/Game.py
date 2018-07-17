@@ -18,6 +18,8 @@ class Game:
         road_building = DevCard("Road Building", "Allows the player to place 2 roads")
         year_of_plenty = DevCard("Year of Plenty", "Draw any 2 resource from bank")
         monopoly = DevCard("Monopoly", "Claim all resource cards of a specified type")
+
+        # TODO: Not sure if adding 14 references to the same object (Knight DevCard instance) will be ok ..
         dev_cards = [knight] * 14 + [victory_point] * 5 + [road_building] * 2 + [year_of_plenty] * 2 + [monopoly] * 2
 
         self.game_resources = Inventory(resource_cards, dev_cards)
@@ -63,6 +65,7 @@ class Game:
             # and give those resources to the player
             resources = [self.tiles[tile_id].resource_type for tile_id in second_settlement]
             print(resources)
+
             for resource in resources:
                 if resource != "Desert":
                     self.player_list[player_id].backpack.resource_cards[resource] += 1
@@ -104,6 +107,7 @@ class Game:
     """
     Find the tile the robber is located on
     """
+    # TODO: Store the location of the robber at self.robber and remove this function
     def find_robber(self):
         for tile in self.tiles.values():
             if tile.has_robber:
@@ -127,6 +131,10 @@ class Game:
     """
     Given a player and roll_num, distribute resources according to what tiles the player owns
     """
+
+    # TODO: If not all players can be given the exact number of resources of some type
+    #       that they should receive, then no player collects resources of that type
+    #       i.e. 'quantity' has to be sum(p0's quantity, p1's quantity, p2's quantity, and p3's quantity)
     def distribute_resources(self, player_id, roll_num):
         player = self.player_list[player_id]
         rolls = player.backpack.rolls
@@ -144,7 +152,7 @@ class Game:
                     self.game_resources.resource_cards[resource] -= min(quantity, remaining)
                     player.backpack.resource_cards[resource] += min(quantity, remaining)
                     player.backpack.num_cards += min(quantity, remaining)
-                    print("Player {0} got {1}".format(player_id, resource))
+                    print("Player {} got {} {}".format(player_id, quantity, resource))
 
     """
     Every player that has more than 7 cards, must return half (rounded down) of their cards to the bank
@@ -154,7 +162,6 @@ class Game:
             player_bp = self.player_list[player_id].backpack
             if player_bp.num_cards > 7:
                 self.__ux(player_id, "return resources")
-
 
     """
     Take in a player_id and attempt to build a road at an edge tuple (x, y)
@@ -166,6 +173,8 @@ class Game:
     def build_road(self, player_id, edge, dev_card=False, second_settlement=None):
         # Edge needs to exist and not have a road, and player needs to have the resource to build the road
         player_bp = self.player_list[player_id].backpack
+
+        # TODO: Fix style
         if edge in self.edges and not self.edges[edge].has_road and self.__connected(player_id, edge, second_settlement):
             if dev_card or (player_bp.resource_cards["Wood"] > 0 and player_bp.resource_cards["Clay"] > 0):
                 if player_bp.num_roads > 0:

@@ -51,5 +51,3 @@ class Backpack(Inventory):
         return "Backpack(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % \
                 (self.resource_cards, self.dev_cards, self.num_settlements, self.num_cities, self.num_roads,
                  self.num_cards, self.victory_points, self.rolls, self.tiles, self.settlements, self.roads, self.ports)
-
-# ex_backpack = Backpack(5, 4, 15)

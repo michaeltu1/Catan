@@ -19,17 +19,3 @@ class Intersection:
 
     def __repr__(self):
         return str(self)
-
-
-    # def build_settlement(self, intersect_id):
-    #     if intersect_id not in Game.unbuildable:
-    #         Game.unbuildable.add(intersect_id)
-    #         Game.unbuildable.add((intersect_id.index(0) + 20,
-    #                               intersect_id.index(1), intersect_id.index(2)))
-    #         Game.unbuildable.add((intersect_id.index(0),
-    #                               intersect_id.index(1) - 7, intersect_id.index(2)))
-    #         Game.unbuildable.add((intersect_id.index(0),
-    #                               intersect_id.index(1), intersect_id.index(2) - 13))
-    #         # TODO: somehow reach intersection object from intersect ID
-    #         "???".has_settlement = True
-    #         # check longest road
