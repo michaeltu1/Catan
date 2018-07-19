@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="jumbo">
+    <h2>Welcome to the Flask app</h2>
+      <div class="tile">
+        <img id="18" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/wood_tile.png" alt="wood tile" >
+        <img id="20" style="width:15%; height:15%" class="center" src="../static/img/catan_pieces/wheat_tile.png" alt="wheat tile">
+        <img id="22" style="width:15%; height:15%" class="center" src="../static/img/catan_pieces/ore_tile.png" alt="ore tile">
+      </div>
+      <div class="tile">
+        <img id="7" style="width:15%; height:15%;" src="../static/img/catan_pieces/brick_tile.png" alt="brick tile" >
+        <img id="9" style="width:15%; height:15%;" src="../static/img/catan_pieces/sheep_tile.png" alt="sheep tile" >
+        <img id="11" style="width:15%; height:15%;" src="../static/img/catan_pieces/brick_tile.png" alt="brick tile" >
+        <img id="13" style="width:15%; height:15%;" src="../static/img/catan_pieces/ore_tile.png" alt="ore tile" >
+      </div>
+      <div class="tile">
+        <img id="-4" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/ore_tile.png" alt="ore tile" >
+        <img id="-2" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/sheep_tile.png" alt="sheep tile" >
+        <img id="0" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/desert_tile.png" alt="desert tile" >
+        <img id="2" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/wheat_tile.png" alt="wheat tile" >
+        <img id="4" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/sheep_tile.png" alt="sheep tile" >
+      </div>
+      <div class="tile">
+        <img id="-13" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/brick_tile.png" alt="brick tile" >
+        <img id="-11" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/wood_tile.png" alt="wood tile" >
+        <img id="-9" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/wheat_tile.png" alt="wheat tile" >
+        <img id="-7" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/wood_tile.png" alt="wood tile" >
+
+      </div>
+      <div class="tile">
+        <img id="-22" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/wheat_tile.png" alt="wheat tile" >
+        <img id="-20" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/wood_tile.png" alt="wood tile" >
+        <img id="-18" style="width:15%; height:15%;" class="center" src="../static/img/catan_pieces/sheep_tile.png" alt="sheep tile" >
+      </div>
+      <div>
+        <button type="button" onclick="loadDoc()" class="button">Play</button>
+      </div>
+
+      <script>
+        function loadDoc() {
+            var xmlhttp = new XMLHttpRequest();
+            var url = "../something.txt";
+
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText);
+                    document.getElementById("-22").src = this.responseText;
+                }
+            };
+            xmlhttp.open("GET", url, true);
+            xmlhttp.send();
+
+            //document.getElementById("-22").src = "../static/img/catan_pieces/sheep_tile.png";
+        }
+        /**
+        function loadDoc() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                  document.getElementById("-22").src = this.responseText;
+                }
+
+            };
+            xhttp.open("GET", "something.txt", true);
+            xhttp.send();
+        }
+        **/
+      </script>
+    <h3>This is the home page for the Flask app</h3>
+  </div>
+{% endblock %}

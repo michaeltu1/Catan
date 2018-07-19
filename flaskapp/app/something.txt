@@ -1,0 +1,1 @@
+../static/img/catan_pieces/sheep_tile.png
