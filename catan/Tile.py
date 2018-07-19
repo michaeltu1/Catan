@@ -22,14 +22,7 @@ class Tile:
                my_id - 2 == other_id or my_id - 9 == other_id or my_id - 11 == other_id
 
     def __str__(self):
-        # print the attributes of this tile
         return "Tile id: %s, roll num: %s, resource: %s" % (self.tile_id, self.roll_num, self.resource_type) 
 
     def __repr__(self):
         return "Tile(%s, %s, %s, %s)" % (self.tile_id, self.resource_type, self.roll_num, self.has_robber)
-
-
-# e = set()
-# i = set()
-# example_tile = Tile(0, "Wheat", 6, e, i)
-# example_tile2 = Tile(1, "Desert", 7, e, i, True)

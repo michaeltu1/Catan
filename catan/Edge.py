@@ -18,8 +18,6 @@ class Edge:
         result = abs(sum2 - sum1)
         return result == 2 or result == 9 or result == 11
 
-    # TODO: Implement BFS in Python to determine longest road when road/settlement is placed.
-
     def get_vertices(self):
         vertices = set()
         diff = self.edge_ID[1] - self.edge_ID[0]
@@ -42,8 +40,3 @@ class Edge:
 
     def __repr__(self):
         return str(self)
-
-
-if __name__ == '__main__':
-    test_edge = Edge(50, 20)
-    print(test_edge.edge_ID)
