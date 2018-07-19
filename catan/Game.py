@@ -17,14 +17,9 @@ class Game:
         resource_cards = {"Wood": 19, "Clay": 19, "Wheat": 19, "Sheep": 19, "Ore": 19}
         self.game_dev_cards = {"Knight": 14, "Victory Point": 5, "Road Building": 2, "Year of Plenty": 2, "Monopoly": 2}
 
-        knight = DevCard("Knight", "Can be used to move the robber")
-        victory_point = DevCard("Victory Point", "Gives the player 1 Victory Point")
-        road_building = DevCard("Road Building", "Allows the player to place 2 roads")
-        year_of_plenty = DevCard("Year of Plenty", "Draw any 2 resource from bank")
-        monopoly = DevCard("Monopoly", "Claim all resource cards of a specified type")
-
-        # TODO: Not sure if adding 14 references to the same object (Knight DevCard instance) will be ok ..
-        dev_cards = [knight] * 14 + [victory_point] * 5 + [road_building] * 2 + [year_of_plenty] * 2 + [monopoly] * 2
+        dev_cards = DevCard.craft("Knight", 14) + DevCard.craft("Victory Point", 5) + \
+                    DevCard.craft("Road Building", 2) + DevCard.craft("Year of Plenty", 2) + \
+                    DevCard.craft("Monopoly", 2)
 
         self.game_resources = Inventory(resource_cards, dev_cards)
         self.board = Board()
