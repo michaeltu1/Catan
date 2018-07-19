@@ -20,7 +20,6 @@ class Intersection:
         edges.add((self.intersect_ID[0], self.intersect_ID[2]))
         return edges
 
-
     def __str__(self):
         return "Intersection id: %s, port: %s, has settlement: %s, has city: %s" \
                % (self.intersect_ID, self.port, self.has_settlement, self.has_city)

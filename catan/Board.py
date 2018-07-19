@@ -1,6 +1,6 @@
 import random
 
-from catan.config.Config import Config
+from catan.Config import Config
 from catan.Tile import Tile
 from catan.Edge import Edge
 from catan.Intersection import Intersection
@@ -11,7 +11,8 @@ class Board:
 
     def __init__(self, mode="standard"):
         """
-        :param mode: determines the configuration of the game
+        Args:
+            mode: determines the configuration of the game
         """
         c = Config()
         # Initialize game rules
@@ -37,17 +38,19 @@ class Board:
         self.collectible_resource_types = ["Wheat"] * 4 + ["Sheep"] * 4 + ["Ore"] * 3 + ["Clay"] * 3 + ["Wood"] * 4
         self.port_types = ["Sheep", "Clay", "Wood", "Wheat", "Ore"] + ["3:1"] * 4
         self.roll_nums = [2] + [3, 4, 5, 6, 8, 9, 10, 11] * 2 + [12]
-        self.land_tile_objects = [0] * 19
+        self.land_tile_objects = None
+        self.robber_tile = None
         self.tile_objects, self.edge_objects, self.intersection_objects = self.generate_random_board()
 
         self.land_tiles = {t.tile_id: t for t in self.tile_objects}
         self.edges = {e.edge_ID: e for e in self.edge_objects}
         self.intersections = {i.intersect_ID: i for i in self.intersection_objects}
 
+    # TODO: Maybe create a more elegant ver. of this func.
     def create_roll_num_assignment(self):
         """
-        After the function is completed, we are guaranteed that high probability roll numbers
-        are not placed on tiles adjacent to each other
+        Generates a dice roll assignment that guarantees high probability
+        roll numbers are not placed on tiles adjacent to each other
         """
         # Retrieve high and low probability dice roll numbers
         common_rolls, uncommon_rolls = high_low_rolls(self.distribution)
@@ -112,7 +115,11 @@ class Board:
 
         # Design desert tile configuration
         tile_configs.append([tile_ids[-1], "Desert", 0, True])
+
+        # Set reference to tile with robber
         self.robber_tile = tile_ids[-1]
+
+        # Instantiate all tiles with given config
         self.land_tile_objects = [Tile(*config) for config in tile_configs]
 
         # Design all ocean tile configs
@@ -178,9 +185,4 @@ class Board:
                "          {:<20}{:<20}{:<20}{:<20}\n\n" \
                "{:<20}{:<20}{:<20}{:<20}{:<20}\n\n" \
                "          {:<20}{:<20}{:<20}{:<20}\n\n" \
-               "                    {:<20}{:<20}{:<20}\n".format(*to_print) + "\n" + str(port_printable)
-
-
-if __name__ == '__main__':
-    b = Board()
-    print(b)
+               "                    {:<20}{:<20}{:<20}\n\n".format(*to_print) + str(port_printable)
