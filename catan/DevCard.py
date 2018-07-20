@@ -10,11 +10,11 @@ class DevCard:
 
     @staticmethod
     def craft(desc, num):
-        make = {"knight": lambda: DevCard("Knight", "Can be used to move the robber"),
-                "victory_point": lambda: DevCard("Victory Point", "Gives the player 1 Victory Point"),
-                "road_building": lambda: DevCard("Road Building", "Allows the player to place 2 roads"),
-                "year_of_plenty": lambda: DevCard("Year of Plenty", "Draw any 2 resource from bank"),
-                "monopoly": lambda: DevCard("Monopoly", "Claim all resource cards of a specified type")}
+        make = {"Knight": lambda: DevCard("Knight", "Can be used to move the robber"),
+                "Victory Point": lambda: DevCard("Victory Point", "Gives the player 1 Victory Point"),
+                "Road Building": lambda: DevCard("Road Building", "Allows the player to place 2 roads"),
+                "Year of Plenty": lambda: DevCard("Year of Plenty", "Draw any 2 resource from bank"),
+                "Monopoly": lambda: DevCard("Monopoly", "Claim all resource cards of a specified type")}
         return [make[desc] for _ in range(num)]
 
     def __str__(self):
