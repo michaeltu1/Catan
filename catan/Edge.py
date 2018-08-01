@@ -39,4 +39,4 @@ class Edge:
         return "Edge id: %s, has road: %s" % (self.edge_ID, self.has_road)
 
     def __repr__(self):
-        return str(self)
+        return "Edge(%s, %s)" % (self.edge_ID, self.has_road)

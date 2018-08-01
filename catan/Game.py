@@ -1,12 +1,18 @@
 import numpy as np
+import json
+
 from ast import literal_eval
 from collections import defaultdict
+from json import JSONEncoder
 
 
 from catan.Player import Player
 from catan.Inventory import Inventory
 from catan.Board import Board
 from catan.DevCard import DevCard
+from catan.Tile import Tile
+from catan.Edge import Edge
+from catan.Intersection import Intersection
 
 
 class Game:
@@ -116,7 +122,6 @@ class Game:
         for tile in self.tiles.values():
             if tile.has_robber:
                 return tile.tile_id
-
 
     def move_robber(self, player_id):
         self.__ux(player_id, "move robber")
@@ -749,6 +754,41 @@ class Game:
         return player_ids[0]
 
 
+class GameEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Game):
+            return {'unbuildable':      str(o.unbuildable),
+                    'game_dev_cards':   str(o.game_dev_cards),
+                    'game_resources':   str(o.game_resources.__repr__()),
+                    'board':            str(o.board.__repr__()), # needs repr
+                    'tiles':            str(o.tiles),
+                    'edges':            str(o.edges),
+                    'intersections':    str(o.intersections),
+                    'player_list':      str(o.player_list),
+                    'robber':           str(o.robber),
+                    'has_longest_road': str(o.has_longest_road),
+                    'has_largest_army': str(o.has_largest_army),
+                    'game_over':        str(o.game_over)}
+        raise NotImplementedError
+
+
+def eval_intersection_objects(b, k, v):
+    val = []
+    v = v.strip("[Intersection]")
+    v = v.replace(", I", "I")
+    v = v.split("Intersection")
+    for params in v:
+        params = params.replace("(", "")
+        params = params.replace(")", "")
+        params = params.split(",")
+        int_id = (params[0], params[1], params[2])
+        harbor = params[3]
+        settlement = eval(params[4])
+        city = eval(params[5])
+        val.append(Intersection(int_id, harbor, settlement, city))
+    b.__setattr__(k, val)
+
+
 if __name__ == "__main__":
 
     g = Game()
@@ -758,6 +798,36 @@ if __name__ == "__main__":
     g.player_list[0] = p
     g.player_list[1] = p1
     g.check_longest_road(0)
+    # GameEncoder().encode(g)
+    x = g.board.__repr__()
+    print(x)
+    print("-----------------------------------------")
+    x = str(x)
+    board_dict = eval(x)
+
+    mode = board_dict['mode']
+    b = Board(mode)
+    del board_dict['mode']
+
+    Wood = "Wood"
+    Clay = "Clay"
+    Sheep = "Sheep"
+    Wheat = "Wheat"
+    Ore = "Ore"
+    Desert = "Desert"
+    Ocean = "Ocean"
+
+    for k, v in board_dict.items():
+        print(k)
+        print(v)
+        if k == 'intersection_objects':
+            eval_intersection_objects(b, k, v)
+        else:
+            b.__setattr__(k, eval(v))
+
+    print(b.__repr__())
+
+    # print(json.dumps(g, cls=GameEncoder))
 """    
     import sys
     f1 = sys.stdin

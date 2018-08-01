@@ -25,4 +25,5 @@ class Intersection:
                % (self.intersect_ID, self.port, self.has_settlement, self.has_city)
 
     def __repr__(self):
-        return str(self)
+        return "Intersection(%s, %s, %s, %s)" \
+               % (self.intersect_ID, self.port, self.has_settlement, self.has_city)

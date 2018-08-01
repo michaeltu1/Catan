@@ -16,6 +16,7 @@ class Board:
         """
         c = Config()
         # Initialize game rules
+        self.mode = mode
         self.config = c.get_config(mode)
 
         # Get the sampling distribution of the dice
@@ -186,3 +187,20 @@ class Board:
                "{:<20}{:<20}{:<20}{:<20}{:<20}\n\n" \
                "          {:<20}{:<20}{:<20}{:<20}\n\n" \
                "                    {:<20}{:<20}{:<20}\n\n".format(*to_print) + str(port_printable)
+
+    def __repr__(self):
+        return {'mode':                       self.mode,
+                'distribution':               str(self.distribution.tolist()),
+                'land_tile_ids':              str(self.land_tile_ids),
+                'ocean_tile_ids':             str(self.ocean_tile_ids),
+                'collectible_resource_types': str(self.collectible_resource_types),
+                'port_types':                 str(self.port_types),
+                'roll_nums':                  str(self.roll_nums),
+                'land_tile_objects':          str(self.land_tile_objects),
+                'robber_tile':                str(self.robber_tile),
+                'tile_objects':               str(self.tile_objects),
+                'edge_objects':               str(self.edge_objects),
+                'intersection_objects':       str(self.intersection_objects),
+                'land_tiles':                 str(self.land_tiles),
+                'edges':                      str(self.edges),
+                'intersections':              str(self.intersections)}

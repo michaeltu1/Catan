@@ -16,7 +16,8 @@ class Inventory:
         return "Resource cards: %s, Dev cards: %s" % (self.resource_cards, self.dev_cards)
 
     def __repr__(self):
-        return "Inventory(%s, %s)" % (self.resource_cards, self.dev_cards)
+        dev_card_str = [dc.__repr__() for dc in self.dev_cards]
+        return "Inventory(%s, %s)" % (self.resource_cards, dev_card_str)
 
 
 class Backpack(Inventory):

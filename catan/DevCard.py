@@ -15,7 +15,7 @@ class DevCard:
                 "Road Building": lambda: DevCard("Road Building", "Allows the player to place 2 roads"),
                 "Year of Plenty": lambda: DevCard("Year of Plenty", "Draw any 2 resource from bank"),
                 "Monopoly": lambda: DevCard("Monopoly", "Claim all resource cards of a specified type")}
-        return [make[desc] for _ in range(num)]
+        return [make[desc]() for _ in range(num)]
 
     def __str__(self):
         return "Card type: %s, Description: %s, Turn bought: %s, Used: %s" % \
