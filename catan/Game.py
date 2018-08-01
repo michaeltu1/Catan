@@ -772,7 +772,7 @@ class GameEncoder(JSONEncoder):
         raise NotImplementedError
 
 
-def eval_intersection_objects(b, k, v):
+def eval_intersection_objects(b, k, v, ret_val=False):
     val = []
     v = v.strip("[Intersection]")
     v = v.replace(", I", "I")
@@ -781,13 +781,27 @@ def eval_intersection_objects(b, k, v):
         params = params.replace("(", "")
         params = params.replace(")", "")
         params = params.split(",")
+        print("params: " + str(params))
         int_id = (params[0], params[1], params[2])
         harbor = params[3]
         settlement = eval(params[4])
         city = eval(params[5])
         val.append(Intersection(int_id, harbor, settlement, city))
+    if ret_val:
+        return val
     b.__setattr__(k, val)
 
+def eval_intersections(b, k, v):
+    val = {}
+    v = v.strip("{()}")
+    v = v.split("), (")
+    for params in v:
+        params = params.split(": ")
+        print("params: " + str(params))
+        tup = eval("(" + params[0])
+        intersect_obj = eval_intersection_objects(b, k, params[1] + ")", ret_val=True)
+        val[tup] = intersect_obj
+    b.__setattr__(k, val)
 
 if __name__ == "__main__":
 
@@ -822,6 +836,8 @@ if __name__ == "__main__":
         print(v)
         if k == 'intersection_objects':
             eval_intersection_objects(b, k, v)
+        elif k == "intersections":
+            eval_intersections(b, k, v)
         else:
             b.__setattr__(k, eval(v))
 
