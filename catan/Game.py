@@ -781,7 +781,6 @@ def eval_intersection_objects(bored, attr, s, ret_val=False):
         params = params.replace("(", "")
         params = params.replace(")", "")
         params = params.split(",")
-        print("params: " + str(params))
         int_id = (params[0], params[1], params[2])
         harbor = params[3]
         settlement = eval(params[4])
@@ -798,7 +797,6 @@ def eval_intersections(bored, attr, s):
     s = s.split("), (")
     for params in s:
         params = params.split(": ")
-        print("params: " + str(params))
         tup = eval("(" + params[0])
         intersect_obj = eval_intersection_objects(bored, attr, params[1] + ")", ret_val=True)
         val[tup] = intersect_obj
@@ -817,7 +815,6 @@ if __name__ == "__main__":
     # GameEncoder().encode(g)
     x = g.board.__repr__()
     print(x)
-    print("-----------------------------------------")
     x = str(x)
     board_dict = eval(x)
 
@@ -833,15 +830,15 @@ if __name__ == "__main__":
     Desert = "Desert"
     Ocean = "Ocean"
 
+    # TODO: didn't eval 'edge_objects' key correctly
     for k, v in board_dict.items():
-        print(k)
-        print(v)
         if k == 'intersection_objects':
             eval_intersection_objects(b, k, v)
         elif k == "intersections":
             eval_intersections(b, k, v)
         else:
             b.__setattr__(k, eval(v))
+    b.distribution = np.array(b.distribution)
 
     print(b.__repr__())
 
