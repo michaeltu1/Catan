@@ -753,6 +753,46 @@ class Game:
             player_rolls.clear()
         return player_ids[0]
 
+    def __repr__(self):
+        return {'unbuildable': str(self.unbuildable),
+                'game_dev_cards': str(self.game_dev_cards),
+                'game_resources': str(self.game_resources.__repr__()),
+                'board': str(self.board.__repr__()),  # needs repr
+                'tiles': str(self.tiles),
+                'edges': str(self.edges),
+                'intersections': str(self.intersections),
+                'player_list': str({pid: person.__repr__() for pid, person in self.player_list.items()}),
+                'robber': str(self.robber),
+                'has_longest_road': str(self.has_longest_road),
+                'has_largest_army': str(self.has_largest_army),
+                'game_over': str(self.game_over)}
+
+    @staticmethod
+    def repr_to_obj(r):
+        Wood = "Wood"
+        Clay = "Clay"
+        Sheep = "Sheep"
+        Wheat = "Wheat"
+        Ore = "Ore"
+        Desert = "Desert"
+        Ocean = "Ocean"
+
+        g2 = Game()
+        g2.unbuildable = eval(r["unbuildable"])
+        g2.game_dev_cards = eval(r["game_dev_cards"])
+        g2.game_resources = eval(r["game_resources"])
+        g2.board = Board.repr_to_obj(y["board"])
+        g2.tiles = eval(r["tiles"])
+        g2.edges = eval(r["edges"])
+        g2.intersections = eval_intersections(r["intersections"])
+        g2.player_list = eval(r["player_list"])
+        g2.robber = eval(r["robber"])
+        g2.has_longest_road = eval(r["has_longest_road"])
+        g2.has_largest_army = eval(r["has_largest_army"])
+        g2.game_over = eval(r["game_over"])
+
+        return g2
+
 
 class GameEncoder(JSONEncoder):
     def default(self, o):
@@ -764,7 +804,7 @@ class GameEncoder(JSONEncoder):
                     'tiles':            str(o.tiles),
                     'edges':            str(o.edges),
                     'intersections':    str(o.intersections),
-                    'player_list':      str(o.player_list),
+                    'player_list':      str({pid: person.__repr__() for pid, person in o.player_list.items()}),
                     'robber':           str(o.robber),
                     'has_longest_road': str(o.has_longest_road),
                     'has_largest_army': str(o.has_largest_army),
@@ -772,7 +812,15 @@ class GameEncoder(JSONEncoder):
         raise NotImplementedError
 
 
-def eval_intersection_objects(bored, attr, s, ret_val=False):
+def eval_intersection_objects(s):
+    Wood = "Wood"
+    Clay = "Clay"
+    Sheep = "Sheep"
+    Wheat = "Wheat"
+    Ore = "Ore"
+    Desert = "Desert"
+    Ocean = "Ocean"
+
     val = []
     s = s.strip("[Intersection]")
     s = s.replace(", I", "I")
@@ -788,25 +836,22 @@ def eval_intersection_objects(bored, attr, s, ret_val=False):
         settlement = eval(params[4])
         city = eval(params[5])
         val.append(Intersection(int_id, harbor, settlement, city))
-    if ret_val:
-        return val[0]
-    bored.__setattr__(attr, val)
+    return val[0]
 
 
-def eval_intersections(bored, attr, s):
+def eval_intersections(s):
     val = {}
     s = s.strip("{()}")
     s = s.split("), (")
     for params in s:
         params = params.split(": ")
         tup = eval("(" + params[0])
-        intersect_obj = eval_intersection_objects(bored, attr, params[1] + ")", ret_val=True)
+        intersect_obj = eval_intersection_objects(params[1] + ")")
         val[tup] = intersect_obj
-    bored.__setattr__(attr, val)
+    return val
 
 
 if __name__ == "__main__":
-
     g = Game()
     # g.play(2)
     p = Player(0)
@@ -815,38 +860,12 @@ if __name__ == "__main__":
     g.player_list[1] = p1
     g.check_longest_road(0)
     # GameEncoder().encode(g)
-
-    """
-    x = g.board.__repr__()
-    print(x)
-    x = str(x)
-    board_dict = eval(x)
-
-    mode = board_dict['mode']
-    b = Board(mode)
-    del board_dict['mode']
-
-    Wood = "Wood"
-    Clay = "Clay"
-    Sheep = "Sheep"
-    Wheat = "Wheat"
-    Ore = "Ore"
-    Desert = "Desert"
-    Ocean = "Ocean"
-
-    for k, v in board_dict.items():
-        if k == 'intersection_objects':
-            eval_intersection_objects(b, k, v)
-        elif k == "intersections":
-            eval_intersections(b, k, v)
-        else:
-            b.__setattr__(k, eval(v))
-    b.distribution = np.array(b.distribution)
-    """
-    x = json.dumps(g, cls=GameEncoder)
-    print(x)
+    print(g.__repr__())
+    # x = json.dumps(g, cls=GameEncoder)
+    x = json.dumps(g.__repr__())
     y = json.loads(x)
-    print(y)
+    g2 = Game.repr_to_obj(y)
+    print(g2.__repr__())
 """    
     import sys
     f1 = sys.stdin

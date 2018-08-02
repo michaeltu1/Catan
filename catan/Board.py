@@ -238,6 +238,13 @@ def eval_intersection_objects(bored, attr, s, ret_val=False):
     s = s.strip("[Intersection]")
     s = s.replace(", I", "I")
     s = s.split("Intersection")
+    Wood = "Wood"
+    Clay = "Clay"
+    Sheep = "Sheep"
+    Wheat = "Wheat"
+    Ore = "Ore"
+    Desert = "Desert"
+    Ocean = "Ocean"
     for params in s:
         params = params[1:-1]
         params = params.split(", ")
