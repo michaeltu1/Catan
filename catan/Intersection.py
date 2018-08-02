@@ -7,11 +7,11 @@ class Intersection:
     By default, no intersections will not have settlements or cities on them.
     """
 
-    def __init__(self, tile_1, tile_2, tile_3, port=None):
-        self.intersect_ID = (tile_1, tile_2, tile_3)
+    def __init__(self, intersect_id, port=None, has_settlement=False, has_city=False):
+        self.intersect_ID = intersect_id
         self.port = port
-        self.has_settlement = False
-        self.has_city = False
+        self.has_settlement = has_settlement
+        self.has_city = has_city
 
     def adjacent_edges(self):
         edges = set()

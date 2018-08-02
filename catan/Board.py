@@ -143,7 +143,7 @@ class Board:
                     (-24, -22), (-22, -20), (-20, -18), (-18, -16),
                     (-33, -22), (-31, -22), (-31, -20), (-29, -20), (-29, -18), (-27, -18)]
 
-        edge_objects = [Edge(*edge_id) for edge_id in edge_ids]
+        edge_objects = [Edge(edge_id) for edge_id in edge_ids]
 
         # List of intersection ids with ports (every 2 consecutive ids have the same port type)
         port_intersections = [[-31, -22, -20], [-31, -29, -20], [-29, -27, -18], [-27, -18, -16],
@@ -166,13 +166,40 @@ class Board:
 
         for i in range(0, len(port_intersections), 2):
             port = self.port_types[i // 2]
-            port_intersections[i].append(port)
-            port_intersections[i + 1].append(port)
+            port_intersections[i] = (tuple(port_intersections[i]), port)
+            port_intersections[i + 1] = (tuple(port_intersections[i + 1]), port)
         port_intersection_objects = [Intersection(*config) for config in port_intersections]
 
-        non_port_intersection_objects = [Intersection(*intersection_id) for intersection_id in non_port_intersections]
+        non_port_intersection_objects = [Intersection(intersection_id) for intersection_id in non_port_intersections]
 
         return tile_objects, edge_objects, non_port_intersection_objects + port_intersection_objects
+
+    @staticmethod
+    def repr_to_obj(r):
+        board_dict = eval(r)
+
+        mode = board_dict['mode']
+        b = Board(mode)
+        del board_dict['mode']
+
+        Wood = "Wood"
+        Clay = "Clay"
+        Sheep = "Sheep"
+        Wheat = "Wheat"
+        Ore = "Ore"
+        Desert = "Desert"
+        Ocean = "Ocean"
+
+        for k, v in board_dict.items():
+            if k == 'intersection_objects':
+                eval_intersection_objects(b, k, v)
+            elif k == "intersections":
+                eval_intersections(b, k, v)
+            else:
+                b.__setattr__(k, eval(v))
+        b.distribution = np.array(b.distribution)
+
+        return b
 
     def __str__(self):
         # Print out board tiles -- for each tile show (roll_num, resource)
@@ -204,3 +231,41 @@ class Board:
                 'land_tiles':                 str(self.land_tiles),
                 'edges':                      str(self.edges),
                 'intersections':              str(self.intersections)}
+
+
+def eval_intersection_objects(bored, attr, s, ret_val=False):
+    val = []
+    s = s.strip("[Intersection]")
+    s = s.replace(", I", "I")
+    s = s.split("Intersection")
+    for params in s:
+        params = params[1:-1]
+        params = params.split(", ")
+        int_id = eval(params[0] + ", " + params[1] + ", " + params[2])
+        try:
+            harbor = eval(params[3])
+        except SyntaxError:
+            harbor = params[3]
+        settlement = eval(params[4])
+        city = eval(params[5])
+        val.append(Intersection(int_id, harbor, settlement, city))
+    if ret_val:
+        return val[0]
+    bored.__setattr__(attr, val)
+
+
+def eval_intersections(bored, attr, s):
+    val = {}
+    s = s.strip("{()}")
+    s = s.split("), (")
+    for params in s:
+        params = params.split(": ")
+        tup = eval("(" + params[0])
+        intersect_obj = eval_intersection_objects(bored, attr, params[1] + ")", ret_val=True)
+        val[tup] = intersect_obj
+    bored.__setattr__(attr, val)
+
+
+if __name__ == '__main__':
+    b = Board()
+    print(b.__repr__())

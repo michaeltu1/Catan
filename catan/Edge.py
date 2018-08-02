@@ -5,9 +5,9 @@ class Edge:
     By default, no edges will have roads on them.
     """
 
-    def __init__(self, tile_1, tile_2):
-        self.edge_ID = (tile_1, tile_2)
-        self.has_road = False
+    def __init__(self, tile_ids, has_road=False):
+        self.edge_ID = tile_ids
+        self.has_road = has_road
 
     """
     Return whether or not another is edge is adjacent to this one 

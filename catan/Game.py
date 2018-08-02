@@ -778,16 +778,18 @@ def eval_intersection_objects(bored, attr, s, ret_val=False):
     s = s.replace(", I", "I")
     s = s.split("Intersection")
     for params in s:
-        params = params.replace("(", "")
-        params = params.replace(")", "")
-        params = params.split(",")
-        int_id = (params[0], params[1], params[2])
-        harbor = params[3]
+        params = params[1:-1]
+        params = params.split(", ")
+        int_id = eval(params[0] + ", " + params[1] + ", " + params[2])
+        try:
+            harbor = eval(params[3])
+        except SyntaxError:
+            harbor = params[3]
         settlement = eval(params[4])
         city = eval(params[5])
         val.append(Intersection(int_id, harbor, settlement, city))
     if ret_val:
-        return val
+        return val[0]
     bored.__setattr__(attr, val)
 
 
@@ -813,6 +815,8 @@ if __name__ == "__main__":
     g.player_list[1] = p1
     g.check_longest_road(0)
     # GameEncoder().encode(g)
+
+    """
     x = g.board.__repr__()
     print(x)
     x = str(x)
@@ -830,7 +834,6 @@ if __name__ == "__main__":
     Desert = "Desert"
     Ocean = "Ocean"
 
-    # TODO: didn't eval 'edge_objects' key correctly
     for k, v in board_dict.items():
         if k == 'intersection_objects':
             eval_intersection_objects(b, k, v)
@@ -839,10 +842,11 @@ if __name__ == "__main__":
         else:
             b.__setattr__(k, eval(v))
     b.distribution = np.array(b.distribution)
-
-    print(b.__repr__())
-
-    # print(json.dumps(g, cls=GameEncoder))
+    """
+    x = json.dumps(g, cls=GameEncoder)
+    print(x)
+    y = json.loads(x)
+    print(y)
 """    
     import sys
     f1 = sys.stdin
