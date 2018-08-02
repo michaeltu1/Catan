@@ -863,7 +863,11 @@ if __name__ == "__main__":
     print(g.__repr__())
     # x = json.dumps(g, cls=GameEncoder)
     x = json.dumps(g.__repr__())
+    print(type(x))
+    print(x)
     y = json.loads(x)
+    print(type(y))
+    print(y)
     g2 = Game.repr_to_obj(y)
     print(g2.__repr__())
 """    
