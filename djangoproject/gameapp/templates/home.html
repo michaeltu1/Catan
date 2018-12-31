@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Welcome to Catan Online{% endblock %}
 
 {% block content %}
 
-Home!
+Home!<br/>
+
+<img src="{% static 'images/catan.jpg' %}">
 
 {% endblock %}
