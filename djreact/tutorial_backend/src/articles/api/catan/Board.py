@@ -1,10 +1,14 @@
+# Path hack.
+import sys
+sys.path.append('..')
+
 import random
 
-from djreact.tutorial_backend.src.articles.api.catan import Config
-from djreact.tutorial_backend.src.articles.api.catan.Tile import Tile
-from djreact.tutorial_backend.src.articles.api.catan.Edge import Edge
-from djreact.tutorial_backend.src.articles.api.catan import Intersection
-from djreact.tutorial_backend.src.articles.api.catan.Utils import *
+from catan.Config import Config
+from catan.Tile import Tile
+from catan.Edge import Edge
+from catan.Intersection import Intersection
+from catan.Utils import *
 
 
 class Board:

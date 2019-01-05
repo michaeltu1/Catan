@@ -5,6 +5,8 @@ router = DefaultRouter()
 router.register('', ArticleViewSet, base_name='articles')
 urlpatterns = router.urls
 
+
+
 # from django.urls import path
 
 # from .views import (

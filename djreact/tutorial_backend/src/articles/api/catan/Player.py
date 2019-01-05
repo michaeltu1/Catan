@@ -1,4 +1,8 @@
-from djreact.tutorial_backend.src.articles.api.catan import Backpack
+# Path hack.
+import sys
+sys.path.append('..')
+
+from catan.Inventory import Backpack
 
 
 class Player:

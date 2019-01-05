@@ -1,3 +1,7 @@
+# Path hack.
+import sys
+sys.path.append('..')
+
 import numpy as np
 import json
 
@@ -5,12 +9,13 @@ from ast import literal_eval
 from collections import defaultdict
 from json import JSONEncoder
 
-
-from djreact.tutorial_backend.src.articles.api.catan import Player
-from djreact.tutorial_backend.src.articles.api.catan import Inventory
-from djreact.tutorial_backend.src.articles.api.catan import Board
-from djreact.tutorial_backend.src.articles.api.catan.DevCard import DevCard
-from djreact.tutorial_backend.src.articles.api.catan import Intersection
+from catan.Player import Player
+from catan.Inventory import Inventory
+from catan.Board import Board
+from catan.DevCard import DevCard
+from catan.Intersection import Intersection
+from catan.Tile import Tile
+from catan.Edge import Edge
 
 
 class Game:
