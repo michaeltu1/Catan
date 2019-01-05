@@ -6,13 +6,11 @@ from collections import defaultdict
 from json import JSONEncoder
 
 
-from catan.Player import Player
-from catan.Inventory import Inventory
-from catan.Board import Board
-from catan.DevCard import DevCard
-from catan.Tile import Tile
-from catan.Edge import Edge
-from catan.Intersection import Intersection
+from djreact.tutorial_backend.src.articles.api.catan import Player
+from djreact.tutorial_backend.src.articles.api.catan import Inventory
+from djreact.tutorial_backend.src.articles.api.catan import Board
+from djreact.tutorial_backend.src.articles.api.catan.DevCard import DevCard
+from djreact.tutorial_backend.src.articles.api.catan import Intersection
 
 
 class Game:

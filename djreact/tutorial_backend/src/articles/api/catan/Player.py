@@ -1,4 +1,4 @@
-from catan.Inventory import Backpack
+from djreact.tutorial_backend.src.articles.api.catan import Backpack
 
 
 class Player:
