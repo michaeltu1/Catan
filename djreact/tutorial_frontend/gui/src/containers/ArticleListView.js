@@ -16,7 +16,18 @@ class ArticleList extends React.Component {
                 this.setState({
                     articles: res.data
                 });
-            })
+            });
+        // axios.get('http://127.0.0.1:8000/api/game/test/')
+        //     .then(res => {
+        //         console.log(res.data)
+        //         this.setState({
+        //             articles: this.state.articles.concat([res.data])
+        //         });
+        //         axios.post('http://127.0.0.1:8000/api/', {
+        //             title: res.data.title,
+        //             content: res.data.content
+        //         });
+        //     });
     }
 
     render() {

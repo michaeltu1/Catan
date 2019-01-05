@@ -1,3 +1,18 @@
+from rest_framework import viewsets
+
+from articles.models import Article
+from .serializers import ArticleSerializer
+from django.http import JsonResponse
+
+
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+
+def test_json(request):
+    from articles.api.catan.Test import test_function
+    return JsonResponse(test_function())
+
 # from rest_framework.generics import (
 #     ListAPIView,
 #     RetrieveAPIView,
@@ -5,16 +20,6 @@
 #     DestroyAPIView,
 #     UpdateAPIView
 # )
-
-from rest_framework import viewsets
-
-from articles.models import Article
-from .serializers import ArticleSerializer
-
-
-class ArticleViewSet(viewsets.ModelViewSet):
-    queryset = Article.objects.all()
-    serializer_class = ArticleSerializer
 
 # class ArticleListView(ListAPIView):
 #     queryset = Article.objects.all()
